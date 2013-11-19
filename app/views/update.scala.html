@@ -1,0 +1,9 @@
+@(rootNodes: Iterator[org.pegdown.ast.RootNode])
+
+@main("Welcome to Play") {
+<ol>
+  @for(rootnode <- rootNodes) {
+                   <li>@rootnode</li>
+                   }
+</ol>
+}

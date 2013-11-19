@@ -1,0 +1,16 @@
+html, body {
+    background: #111;
+    color: #0B0;
+}
+
+.searchForm {
+    margin: auto auto;
+    text-align: center;
+}
+
+input {
+    padding: 5px;
+    border: 1px solid #0B0;
+    background: #222;
+    color: #0B0;
+}
