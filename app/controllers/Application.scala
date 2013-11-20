@@ -8,6 +8,8 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.FileUtils
 import scala.collection.JavaConversions._
 import org.pegdown.{PegDownProcessor, Extensions}
+import org.sphx.api.SphinxClient
+import com.sphinxsearch.indexer.{Document, Index, IndexDescription}
 
 object Application extends Controller {
 
