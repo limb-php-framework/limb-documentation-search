@@ -1,4 +1,9 @@
-This is your new Play application
+Limb docs searcher
 =====================================
 
-This file will be packaged with your application, when using `play dist`.
+Для запуска нужна Scala: http://scala-lang.org/files/archive/scala-2.10.3.deb
+И Sbt: http://repo.scala-sbt.org/scalasbt/sbt-native-packages/org/scala-sbt/sbt/0.13.0/sbt.deb
+
+Как запускать:
+- Клонируем репозиторий, заходим в него
+- Делаем sbt run (или sbt start для production режима)
