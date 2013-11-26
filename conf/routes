@@ -1,5 +1,4 @@
 GET     /                    controllers.Application.index
-GET     /update              controllers.Application.update
 GET     /search              controllers.Application.search(s: String)
 
 # Map static resources from the /public folder to the /assets URL path

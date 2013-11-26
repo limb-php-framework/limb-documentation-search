@@ -13,14 +13,6 @@ import com.sphinxsearch.indexer.{Document, Index, IndexDescription}
 
 object Application extends Controller {
 
-  def update() = Action {
-    val processor = new PegDownProcessor(Extensions.ALL)
-    val mdFiles = FileUtils.iterateFiles(new File("../limb"), Array("md"), true)
-    Ok(views.html.update(mdFiles.map { file =>
-      processor.parseMarkdown(Source.fromFile(file.toString).mkString.toCharArray)
-    }))
-  }
-
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
   }
@@ -28,6 +20,4 @@ object Application extends Controller {
   def search(keywords: String) = Action {
     Ok(views.html.search(keywords))
   }
-
-
 }
