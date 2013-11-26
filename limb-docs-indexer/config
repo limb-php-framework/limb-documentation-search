@@ -1,0 +1,3 @@
+download_limb_if_no_exists = true
+limb_git_path = "https://github.com/limb-php-framework/limb.git"
+limb_local_path = "../limb"
