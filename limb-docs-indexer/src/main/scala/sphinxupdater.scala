@@ -50,6 +50,15 @@ object xmlpipe2Generator {
   }
 
   def main(args: Array[String]): Unit = {
+    if (config[Boolean]("download_limb_if_no_exists")) {
+      if (!(new File(config[String]("limb_local_path"))).exists) {
+        val status = ("git clone " + config[String]("limb_git_path") + " " + config[String]("limb_local_path")) #> (new File("/dev/null")) !
+
+        if (status != 0 ) {
+          System.exit(status)
+        }
+      }
+    }
 
     val processor = new PegDownProcessor(Extensions.ALL)
     val mdFiles = FileUtils.iterateFiles(new File(config[String]("limb_local_path")), Array("md"), true)
