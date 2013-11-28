@@ -22,6 +22,7 @@ object Application extends Controller {
   def search(keywords: String) = Action {
     val sphinx = new SphinxClient
     sphinx.SetServer("localhost", 9312)
+    val statistics = sphinx.BuildKeywords(keywords, "limb", true)
     var results = List[String]()
     DB.getConnection()
     DB.withConnection{ implicit connection =>
@@ -31,6 +32,6 @@ object Application extends Controller {
         _[String]("url")
       }.toList
     }
-    Ok(views.html.search(results))
+    Ok(views.html.search(results, statistics))
   }
 }

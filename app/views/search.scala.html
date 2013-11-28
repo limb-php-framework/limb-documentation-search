@@ -1,11 +1,15 @@
-@(results: List[String])
+@(results: List[String], statistics: Array[java.util.Map[_, _]])
 
 @main("Результаты поиска") {
   @form()
+  @statistics.map { keyword =>
+    По ключевому слову @keyword.get("normalized") найденно  @keyword.get("docs") документов <br>
+    Слово @keyword.get("normalized") встречается @keyword.get("hits") раз <br>
+   }
   @if(results.length != 0) {
     <ol>
     @results.map { row =>
-     <li> @row </li>
+     <li> https://github.com/limb-php-framework/limb/blob/master/@row </li>
     }
     </ol>
   } else {
