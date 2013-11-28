@@ -1,9 +1,10 @@
 package indexer
 
+import java.sql.DriverManager
 import org.streum.configrity._
 import com.sphinxsearch.indexer.{Document, Index, IndexDescription}
 import org.pegdown.{PegDownProcessor, Extensions}
-import org.pegdown.ast.{AbstractNode, VerbatimNode, TextNode, RootNode, HeaderNode, Node}
+import org.pegdown.ast.{TextNode, RootNode, HeaderNode, Node}
 import org.apache.commons.io.FileUtils
 import java.io.File
 import scala.collection.JavaConversions._
@@ -19,6 +20,7 @@ object xmlpipe2Generator {
   class SphinxElement {
     private var header: String = ""
     private var content: String = ""
+    private var url: String = ""
 
     def getHeader: String = {
       header
@@ -28,12 +30,20 @@ object xmlpipe2Generator {
       content
     }
 
+    def getURL: String = {
+      url
+    }
+
     def addHeader(value: String) = {
       header += value
     }
 
     def addContent(value: String) = {
       content += " " + value
+    }
+
+    def setURL(value: String) = {
+      url = value
     }
   }
 
@@ -59,18 +69,28 @@ object xmlpipe2Generator {
         }
       }
     }
-
+    Class.forName("org.sqlite.JDBC")
+    val db_file = new File(config[String]("db_path"))
+    if (db_file.exists) {
+      db_file.delete
+    }
+    val connection = DriverManager.getConnection("jdbc:sqlite:" + config[String]("db_path"))
+    val statement = connection.createStatement()
+    statement.executeUpdate("create table id_url (id integer, url string)")
     val processor = new PegDownProcessor(Extensions.ALL)
     val mdFiles = FileUtils.iterateFiles(new File(config[String]("limb_local_path")), Array("md"), true)
     val HEADER = "header"
     val CONTENT = "content"
     val URL = "url"
-    val desc = IndexDescription.createIndexDescription(HEADER, CONTENT, URL)
+    val CODE = "code"
+    val desc = IndexDescription.createIndexDescription(HEADER, CONTENT)
+    desc.addStr2OrdinalAttribute(URL)
     val index = Index.createIndex(desc)
-    var i = 1
+    var id = 1
     for (file <- mdFiles) {
       val mdTree = processor.parseMarkdown(Source.fromFile(file.toString).mkString.toCharArray)
       val element = new SphinxElement
+      element.setURL(file.toString)
       def getTextFromOtherNodes(nodeList: java.util.List[Node]): Unit = {
         nodeList.foreach { node =>
           node match {
@@ -81,12 +101,14 @@ object xmlpipe2Generator {
         }
       }
       getTextFromOtherNodes(mdTree.getChildren)
-      val doc = new Document(i)
+      val doc = new Document(id)
       doc.addProperty(HEADER, element.getHeader)
       doc.addProperty(CONTENT, element.getContent)
-      doc.addProperty(URL, file.toString)
+      doc.addProperty(URL, element.getURL)
+      val query = "INSERT INTO `id_url` (id, url) VALUES (" + id.toString + ", '" + element.getURL + "');"
+      statement.executeUpdate(query)
       index.addDocuments(doc)
-      i += 1
+      id += 1
     }
     index.close()
   }
