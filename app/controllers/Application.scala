@@ -1,5 +1,8 @@
 package controllers
 
+import anorm._
+import play.api.Play.current
+import play.api.db._
 import play.api._
 import play.api.mvc._
 import java.io.File
@@ -9,15 +12,25 @@ import org.apache.commons.io.FileUtils
 import scala.collection.JavaConversions._
 import org.pegdown.{PegDownProcessor, Extensions}
 import org.sphx.api.SphinxClient
-import com.sphinxsearch.indexer.{Document, Index, IndexDescription}
 
 object Application extends Controller {
 
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+    Ok(views.html.index())
   }
 
   def search(keywords: String) = Action {
-    Ok(views.html.search(keywords))
+    val sphinx = new SphinxClient
+    sphinx.SetServer("localhost", 9312)
+    var results = List[String]()
+    DB.getConnection()
+    DB.withConnection{ implicit connection =>
+      results = SQL("""SELECT url
+        FROM id_url
+        WHERE id IN (""" + sphinx.Query(keywords, "limb").matches.map{_.docId}.mkString(", ") + ");")().map {
+        _[String]("url")
+      }.toList
+    }
+    Ok(views.html.search(results))
   }
 }

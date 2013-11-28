@@ -1,5 +1,14 @@
-@(message: String)
+@(results: List[String])
 
-@main("Welcome to Play") {
-@message
+@main("Результаты поиска") {
+  @form()
+  @if(results.length != 0) {
+    <ol>
+    @results.map { row =>
+     <li> @row </li>
+    }
+    </ol>
+  } else {
+    Ничего не найдено
+  }
 }
