@@ -90,7 +90,7 @@ object xmlpipe2Generator {
     for (file <- mdFiles) {
       val mdTree = processor.parseMarkdown(Source.fromFile(file.toString).mkString.toCharArray)
       val element = new SphinxElement
-      element.setURL(file.toString)
+      element.setURL(new File(config[String]("limb_local_path")).toURI.relativize((new File(file.toString)).toURI).getPath)
       def getTextFromOtherNodes(nodeList: java.util.List[Node]): Unit = {
         nodeList.foreach { node =>
           node match {
