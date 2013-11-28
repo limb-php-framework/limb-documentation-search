@@ -5,6 +5,9 @@ name := "limb-docs-indexer"
 version := "1.0-SNAPSHOT"
 
 libraryDependencies ++= Seq(
+  "org.xerial" % "sqlite-jdbc" % "3.7.2",
+  "com.typesafe.slick" %% "slick" % "1.0.1",
+  "com.h2database" % "h2" % "1.3.166",
   "org.apache.commons" % "commons-io" % "1.3.2",
   "eu.henkelmann" % "actuarius_2.10.0" % "0.2.6",
   "org.pegdown" % "pegdown" % "1.4.1",
