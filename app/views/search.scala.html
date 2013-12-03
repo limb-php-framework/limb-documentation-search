@@ -9,7 +9,7 @@
   @if(results.length != 0) {
     <ol>
     @results.map { row =>
-     <li> <a href="https://github.com/limb-php-framework/limb/blob/master/@row.link">@row.header</a> </li>
+     <li> <a target="_blank" href="https://github.com/limb-php-framework/limb/blob/master/@row.link">@row.header</a> </li>
      @row.snippets.map { snippet =>
        @Html(snippet)
        <br>
