@@ -35,7 +35,7 @@ object xmlpipe2Generator {
     }
 
     def addHeader(value: String) = {
-      header += value
+      header += " " + value
     }
 
     def addContent(value: String) = {
@@ -76,7 +76,7 @@ object xmlpipe2Generator {
     }
     val connection = DriverManager.getConnection("jdbc:sqlite:" + config[String]("db_path"))
     val statement = connection.createStatement()
-    statement.executeUpdate("create table id_url (id integer, url string)")
+    statement.executeUpdate("CREATE TABLE id_url (id INTEGER, url TEXT, header TEXT, content TEXT)")
     val processor = new PegDownProcessor(Extensions.ALL)
     val mdFiles = FileUtils.iterateFiles(new File(config[String]("limb_local_path")), Array("md"), true)
     val HEADER = "header"
@@ -105,8 +105,13 @@ object xmlpipe2Generator {
       doc.addProperty(HEADER, element.getHeader)
       doc.addProperty(CONTENT, element.getContent)
       doc.addProperty(URL, element.getURL)
-      val query = "INSERT INTO `id_url` (id, url) VALUES (" + id.toString + ", '" + element.getURL + "');"
-      statement.executeUpdate(query)
+      val prepareQuery = "INSERT INTO `id_url` (id, url, header, content) VALUES (?, ?, ?, ?);"
+      val query = connection.prepareStatement(prepareQuery)
+      query.setInt(1, id)
+      query.setString(2, element.getURL)
+      query.setString(3, element.getHeader)
+      query.setString(4, element.getContent)
+      query.executeUpdate
       index.addDocuments(doc)
       id += 1
     }
