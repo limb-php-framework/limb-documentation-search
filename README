@@ -7,3 +7,11 @@ Limb docs searcher
 Как запускать:
 - Клонируем репозиторий, заходим в него
 - Делаем sbt run (или sbt start для production режима)
+
+Как индексировать:
+Прописываем в sphinx.conf путь к jar файлу limb-docs-indexer'a
+Далее либо:
+копируем sphinx.conf в /etc/sphinxsearch/
+Либо:
+Запускаем sudo indexer --config путь_к_sphinx.conf (права рута нужны для того, что он мог положить результаты в /var/lib*".
+На данной стадии разработки индексер нужно запускать из папки limb-docs-indexer т.к. там лежит конфиг limb-docs-indexer'a. В будущем он будет лежать в /etc/*.
