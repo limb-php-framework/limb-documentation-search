@@ -1,5 +1,6 @@
 @(results: Array[controllers.Application.Result], statistics: Array[java.util.Map[_, _]])
 
+<div class="content">
 @main("Результаты поиска") {
   @form()
   @statistics.map { keyword =>
@@ -21,3 +22,4 @@
     Ничего не найдено
   }
 }
+</div>
