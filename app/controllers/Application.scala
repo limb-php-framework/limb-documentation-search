@@ -14,27 +14,33 @@ import org.pegdown.{PegDownProcessor, Extensions}
 import org.sphx.api.SphinxClient
 import scala.collection.mutable.HashMap
 import org.apache.commons.lang3.StringEscapeUtils.escapeHtml4
+import java.lang.NullPointerException
+import play.api.libs.json.Json.toJson
 
 object Application extends Controller {
+
+  val sphinx = new SphinxClient
+  sphinx.SetServer("localhost", 9312)
 
   class Result {
     var id: Long = 0
     var header = ""
-    var snippets = Array[String]()
+    var snippets = List[String]()
     var link = ""
   }
 
-  def index = Action {
-    Ok(views.html.index())
+  def getStatistics(keywords: String) = {
+    sphinx.BuildKeywords(keywords, "limb", true)
   }
 
-  def search(keywords: String, offset: Int, limit: Int) = Action {
-    val sphinx = new SphinxClient
-    sphinx.SetServer("localhost", 9312)
+  def getResults(keywords: String, offset: Int, limit: Int) = {
     sphinx.SetLimits(offset, limit)
-    val statistics = sphinx.BuildKeywords(keywords, "limb", true)
     val snippets = sphinx.BuildExcerpts(keywords.split(" "), "limb", "php", HashMap[String, Int]()).toString
-    val docIds = sphinx.Query(keywords, "limb").matches.map{_.docId}
+    val docIds = try {
+      sphinx.Query(keywords, "limb").matches.map{_.docId}
+    } catch {
+      case e: NullPointerException => Array()
+    }
     DB.getConnection()
     var results: Array[Result] = Array()
     DB.withConnection{ implicit connection =>
@@ -51,15 +57,33 @@ object Application extends Controller {
         val docs = prepareResult.map{ content =>
           escapeHtml4( content[String]("content"))
         }.toArray[String]
-        result.snippets = sphinx.BuildExcerpts(docs, "limb", keywords, HashMap[String, Int]("around" -> 10))
+        result.snippets = sphinx.BuildExcerpts(docs, "limb", keywords, HashMap[String, Int]("around" -> 15)).toList
         result
       }
-      // links = SQL("""SELECT url
-      //   FROM id_url
-      //   WHERE id IN (""" + docIds.mkString(", ") + ");")().map {
-      //   _[String]("url")
-      // }.toList
     }
+    results
+  }
+
+  def index = Action {
+    Ok(views.html.index())
+  }
+
+  def search(keywords: String, offset: Int, limit: Int, autoload: Boolean) = Action {
+    val results = getResults(keywords, offset, limit)
+    val statistics = getStatistics(keywords)
     Ok(views.html.search(results, statistics))
+  }
+
+  def searchJson(keywords: String, offset: Int, limit: Int) = Action {
+    val results = toJson(Map("results" ->
+      getResults(keywords, offset, limit).map { result =>
+        toJson(Map(
+          "id" -> toJson(result.id),
+          "header" -> toJson(result.header),
+          "snippets" -> toJson(result.snippets),
+          "link" -> toJson(result.link)
+        ))
+      }.toList))
+    Ok(toJson(results))
   }
 }
