@@ -1,18 +1,15 @@
-html, body {
-    background: #111;
-    color: #BBB;
-}
-
 .searchForm {
     margin: auto auto;
     text-align: center;
 }
 
 input {
-    padding: 5px;
-    border: 1px solid #0B0;
-    background: #222;
-    color: #0B0;
+    padding: 5px;;
 }
 
 a { color: #09f; }
+
+.content {
+    margin: 10px auto;
+    max-width: 1200px;
+}
