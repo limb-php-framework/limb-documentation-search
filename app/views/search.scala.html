@@ -3,10 +3,13 @@
 <div class="content">
 @main("Результаты поиска") {
   @form()
-  @statistics.map { keyword =>
+  <b>Найдено @results.length документов</b>
+  <br>
+  <b>@statistics.map { keyword =>
     По ключевому слову @keyword.get("normalized") найденно  @keyword.get("docs") документов <br>
     Слово @keyword.get("normalized") встречается @keyword.get("hits") раз <br>
-   }
+   }</b>
+  <br>
   @if(results.length != 0) {
     <ol>
     @results.map { row =>
