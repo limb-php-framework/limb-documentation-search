@@ -91,11 +91,16 @@ object xmlpipe2Generator {
       val mdTree = processor.parseMarkdown(Source.fromFile(file.toString).mkString.toCharArray)
       val element = new SphinxElement
       element.setURL(new File(config[String]("limb_local_path")).toURI.relativize((new File(file.toString)).toURI).getPath)
+      var firstHeader = true
       def getTextFromOtherNodes(nodeList: java.util.List[Node]): Unit = {
         nodeList.foreach { node =>
           node match {
             case _: TextNode => element.addContent(omgGetTextFromTextNode(node))
-            case _: HeaderNode => element.addHeader(getTextFromHeaderNode(node))
+            case _: HeaderNode => if (firstHeader) {
+              element.addHeader(getTextFromHeaderNode(node))
+              firstHeader = false
+              getTextFromOtherNodes(node.getChildren)
+            }
             case _ => getTextFromOtherNodes(node.getChildren)
           }
         }
