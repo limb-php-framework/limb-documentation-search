@@ -1,5 +1,6 @@
 import com.typesafe.sbt.SbtNativePackager._
 import com.typesafe.sbt.packager.Keys._
+import sbt._
 
 name := "limb-docs-searcher"
 
@@ -28,3 +29,10 @@ packageDescription in Linux := "The description"
 packageSummary := "A package summary"
 
 maintainer := "Andrew Rezcov <rsa199@ya.ru>"
+
+linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
+  (packageMapping(
+    (bd / "conf/limb-docs-searcher.postinst") -> "DEBIAN/postinst"
+  ) withUser "root" withGroup "root" withPerms "0775") asDocs()
+}
+
