@@ -15,7 +15,7 @@ import java.io.File
 
 object xmlpipe2Generator {
 
-  val config = Configuration.load("config")
+  val config = Configuration.load("/etc/limb-docs-indexer/config")
 
   class SphinxElement {
     private var header: String = ""
