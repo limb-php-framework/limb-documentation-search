@@ -1,14 +1,10 @@
-@(results: Array[controllers.Application.Result], statistics: Array[java.util.Map[_, _]])
+@(results: Array[controllers.Application.Result])
 
 <div class="content">
 @main("Результаты поиска") {
   @form()
-  <b>Найдено @results.length документов</b>
+  <b>Показано @results.length документов</b>
   <br>
-  <b>@statistics.map { keyword =>
-    По ключевому слову @keyword.get("normalized") найденно  @keyword.get("docs") документов <br>
-    Слово @keyword.get("normalized") встречается @keyword.get("hits") раз <br>
-   }</b>
   <br>
   @if(results.length != 0) {
     <ol>

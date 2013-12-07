@@ -16,6 +16,7 @@ import scala.collection.mutable.HashMap
 import org.apache.commons.lang3.StringEscapeUtils.escapeHtml4
 import java.lang.NullPointerException
 import play.api.libs.json.Json.toJson
+import org.sphx.api.SphinxException
 
 object Application extends Controller {
 
@@ -29,13 +30,8 @@ object Application extends Controller {
     var link = ""
   }
 
-  def getStatistics(keywords: String) = {
-    sphinx.BuildKeywords(keywords, "limb", true)
-  }
-
   def getResults(keywords: String, offset: Int, limit: Int) = {
     sphinx.SetLimits(offset, limit)
-    val snippets = sphinx.BuildExcerpts(keywords.split(" "), "limb", "php", HashMap[String, Int]()).toString
     val docIds = try {
       sphinx.Query(keywords, "limb").matches.map{_.docId}
     } catch {
@@ -57,7 +53,11 @@ object Application extends Controller {
         val docs = prepareResult.map{ content =>
           escapeHtml4( content[String]("content"))
         }.toArray[String]
-        result.snippets = sphinx.BuildExcerpts(docs, "limb", keywords, HashMap[String, Int]("around" -> 15)).toList
+        result.snippets = try {
+          sphinx.BuildExcerpts(docs, "limb", keywords, HashMap[String, Int]("around" -> 15)).toList
+        } catch {
+          case e: SphinxException =>  List[String]()
+        }
         result
       }
     }
@@ -70,8 +70,7 @@ object Application extends Controller {
 
   def search(keywords: String, offset: Int, limit: Int, autoload: Boolean) = Action {
     val results = getResults(keywords, offset, limit)
-    val statistics = getStatistics(keywords)
-    Ok(views.html.search(results, statistics))
+    Ok(views.html.search(results))
   }
 
   def searchJson(keywords: String, offset: Int, limit: Int) = Action {
