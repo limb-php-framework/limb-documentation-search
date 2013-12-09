@@ -1,0 +1,4 @@
+download_limb_if_no_exists = true
+limb_git_path = "https://github.com/limb-php-framework/limb.git"
+limb_local_path = /var/lib/limb-docs/limb/
+db_path = /var/lib/limb-docs/id_url.db
