@@ -13,3 +13,6 @@ dist
 /.project
 /RUNNING_PID
 /.settings
+/limb-docs-indexer/id_url.db
+/limb/
+
