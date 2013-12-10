@@ -43,7 +43,7 @@ object Application extends Controller {
       results = docIds.map { docId =>
         val result = new Result
         result.id = docId
-        val prepareResult = SQL("SELECT url, header, content FROM id_url WHERE id = " + docId + ";")()
+        val prepareResult = SQL("SELECT url, header, content FROM id_url WHERE id = {id}").on("id" -> docId)()
         result.header = prepareResult.map {
           _[String]("header")
         }.mkString
