@@ -17,11 +17,14 @@ import org.apache.commons.lang3.StringEscapeUtils.escapeHtml4
 import java.lang.NullPointerException
 import play.api.libs.json.Json.toJson
 import org.sphx.api.SphinxException
+import play.Configuration.root
+import play.Logger
+
 
 object Application extends Controller {
 
-  val sphinx = new SphinxClient
-  sphinx.SetServer("localhost", 9312)
+  private val sphinx = new SphinxClient
+  sphinx.SetServer(root.getString("sphinxServer"), root.getInt("sphinxPort"))
 
   class Result {
     var id: Long = 0
@@ -30,14 +33,13 @@ object Application extends Controller {
     var link = ""
   }
 
-  def getResults(keywords: String, offset: Int, limit: Int) = {
+  private def getResults(keywords: String, offset: Int, limit: Int) = {
     sphinx.SetLimits(offset, limit)
     val docIds = try {
       sphinx.Query(keywords, "limb").matches.map{_.docId}
     } catch {
       case e: NullPointerException => Array()
     }
-    DB.getConnection()
     var results: Array[Result] = Array()
     DB.withConnection{ implicit connection =>
       results = docIds.map { docId =>
