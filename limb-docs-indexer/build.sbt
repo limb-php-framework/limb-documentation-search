@@ -33,7 +33,6 @@ linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
   ) withUser "root" withGroup "root" withPerms "0644") asDocs()
 }
 
-
 linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
   (packageMapping(
     (bd / "conf/config") -> "/etc/limb-docs-indexer/config"
@@ -49,5 +48,11 @@ linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
 linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
   (packageMapping(
     (bd / "debian/limb-docs-indexer.cron.d") -> "etc/cron.d/limb-docs-indexer"
+  ) withUser "root" withGroup "root" withPerms "0775") asDocs()
+}
+
+linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
+  (packageMapping(
+    (bd / "debian/sphinx.conf") -> "etc/limb-docs-indexer/sphinx.conf"
   ) withUser "root" withGroup "root" withPerms "0775") asDocs()
 }
