@@ -29,12 +29,25 @@ debianPackageRecommends in Debian += "sbt"
 
 linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
   (packageMapping(
+    (bd / "debian/changelog") -> "DEBIAN/changelog"
+  ) withUser "root" withGroup "root" withPerms "0644") asDocs()
+}
+
+
+linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
+  (packageMapping(
     (bd / "conf/config") -> "/etc/limb-docs-indexer/config"
   ) withUser "root" withGroup "root" withPerms "0644") asDocs()
 }
 
 linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
   (packageMapping(
-    (bd / "conf/limb-docs-indexer.postinst") -> "DEBIAN/postinst"
+    (bd / "debian/limb-docs-indexer.postinst") -> "DEBIAN/postinst"
+  ) withUser "root" withGroup "root" withPerms "0775") asDocs()
+}
+
+linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
+  (packageMapping(
+    (bd / "debian/limb-docs-indexer.cron.d") -> "etc/cron.d/limb-docs-indexer"
   ) withUser "root" withGroup "root" withPerms "0775") asDocs()
 }
