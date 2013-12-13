@@ -30,9 +30,28 @@ packageSummary := "A package summary"
 
 maintainer := "Andrew Rezcov <rsa199@ya.ru>"
 
+debianPackageDependencies in Debian ++= Seq("default-jdk")
+
 linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
   (packageMapping(
-    (bd / "conf/limb-docs-searcher.postinst") -> "DEBIAN/postinst"
-  ) withUser "root" withGroup "root" withPerms "0775") asDocs()
+    (bd / "debian/limb-docs-searcher.postinst") -> "DEBIAN/postinst"
+  ) withUser "root" withGroup "root" withPerms "0755") asDocs()
 }
 
+linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
+  (packageMapping(
+    (bd / "debian/limb-docs-searcher.upstart") -> "etc/init/limb-docs-searcher.conf"
+  ) withUser "root" withGroup "root" withPerms "0755") asDocs()
+}
+
+linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
+  (packageMapping(
+    (bd / "debian/limb-docs-searcher.default") -> "DEBIAN/default"
+  ) withUser "root" withGroup "root" withPerms "0755") asDocs()
+}
+
+linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
+  (packageMapping(
+    (bd / "debian/changelog") -> "DEBIAN/changelog"
+  ) withUser "root" withGroup "root" withPerms "0755") asDocs()
+}
