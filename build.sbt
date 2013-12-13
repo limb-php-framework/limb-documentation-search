@@ -22,11 +22,11 @@ resolvers += "Repo" at "http://evgenyg.artifactoryonline.com/evgenyg/list/libs-r
 
 play.Project.playScalaSettings
 
-description in Linux := "The description"
+description in Linux := "Limb documents searcher"
 
-packageDescription in Linux := "The description"
+packageDescription in Linux := "Limb documents searcher"
 
-packageSummary := "A package summary"
+packageSummary := "Limb documents searcher"
 
 maintainer := "Andrew Rezcov <rsa199@ya.ru>"
 
