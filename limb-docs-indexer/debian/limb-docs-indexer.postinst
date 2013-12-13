@@ -14,4 +14,4 @@ then
         mkdir $RESULTS_DIR
 fi
 
-chmod 777 $RESULTS_DIR -R
+chmod 755 $RESULTS_DIR -R
