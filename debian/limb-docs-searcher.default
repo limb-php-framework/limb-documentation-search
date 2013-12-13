@@ -1,7 +1,13 @@
-DEFAULTS="/etc/default/limb-docs-searcher"
-RUNNER="/usr/bin/limb-docs-searcher"
-APP_PIDFILE="/usr/share/limb-docs-searcher/RUNNING_PID"
+application.secret="GO28;2pShFx`q_Q``s_ArE<Fkvwd/EfPFLxxoCM7NlA[Bt1IvD]B[W81LWXi]bhU"
 
-UWSGI_LOGTO="/var/log/hh-career-fair/uwsgi.log"
-UWSGI_HTTP="0.0.0.0:9000"
-UWSGI_DISABLE_LOGGING=true
+application.langs="en"
+
+sphinxServer = localhost
+sphinxPort = 9312
+
+db.default.driver=org.sqlite.JDBC
+db.default.url="jdbc:sqlite:/var/lib/limb-docs/id_url.db"
+
+logger=ERROR
+logger.play=ERROR
+logger.application=ERROR
