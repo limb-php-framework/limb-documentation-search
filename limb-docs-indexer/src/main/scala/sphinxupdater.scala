@@ -76,7 +76,7 @@ object xmlpipe2Generator {
   }
 
   def main(args: Array[String]): Unit = {
-    if (config[Boolean]("download_limb_if_no_exists")) {
+    if (config[Boolean]("download_limb_if_not_exists")) {
       if (!(new File(config[String]("limb_local_path"))).exists) {
         val status = Array("git clone", config[String]("limb_git_path"), config[String]("limb_local_path")).mkString(" ") #> (new File("/dev/null")) !
 
