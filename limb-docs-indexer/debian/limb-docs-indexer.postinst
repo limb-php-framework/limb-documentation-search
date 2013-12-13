@@ -1,13 +1,6 @@
 #!/bin/sh
 
-# USER="limb"
 RESULTS_DIR="/var/lib/limb-docs/"
-# if grep $USER /etc/passwd
-# then
-#         echo $USER exists
-# else
-#         adduser --system $USER
-# fi
 
 if ! [ -d $RESULTS_DIR ]
 then
