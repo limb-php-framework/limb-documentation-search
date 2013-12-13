@@ -6,11 +6,7 @@ Limb docs searcher
 Как собирать deb-пакеты:
 - заходим в папку приложения и делаем sbt debian:package-bin
 
-Как всё настраивать:
-Устанавливаем в конфигах индексера и сёрчера одинаковые пути к базе (индексер создаст её сам если отсутствует).
-Далее либо:
-копируем sphinx.conf в /etc/sphinxsearch/ и делаем sudo indexer -all (так только в первый раз, далее ещё и с ключём --rotate) (права рута нужны для того, что он мог положить результаты в /var/lib*)
-Либо:
-Запускаем sudo indexer --config путь_к_sphinx.conf -all.
-
-Сёрчер запускается коммандой limb-docs-searcher.
+Запускаем (первый раз) sudo indexer --config /etc/limb-docs-indexer/sphinx.conf --all
+В следующие разы запускайте sudo indexer --config /etc/limb-docs-indexer/sphinx.conf --all --rotate
+Сёрчер запускается коммандой sudo start limb-docs-seacher.
+Sphinx сервер запускайте с конфигом /etc/limb-docs-indexer/sphinx.conf.
