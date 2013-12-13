@@ -8,7 +8,7 @@
   <br>
   @if(results.length != 0) {
     <ol>
-    @for(row <- results) { row
+    @for(row <- results) {
      <li> <a target="_blank" href="https://github.com/limb-php-framework/limb/blob/master/@row.link">@row.header</a> </li>
      @for(snippet <- row.snippets) {
        @Html(snippet)
