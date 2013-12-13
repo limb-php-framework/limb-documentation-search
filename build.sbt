@@ -46,7 +46,7 @@ linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
 
 linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
   (packageMapping(
-    (bd / "debian/limb-docs-searcher.default") -> "DEBIAN/default"
+    (bd / "debian/limb-docs-searcher.default") -> "etc/default/limb-docs-searcher"
   ) withUser "root" withGroup "root" withPerms "0755") asDocs()
 }
 
