@@ -1,0 +1,7 @@
+DEFAULTS="/etc/default/limb-docs-searcher"
+RUNNER="/usr/bin/limb-docs-searcher"
+APP_PIDFILE="/usr/share/limb-docs-searcher/RUNNING_PID"
+
+UWSGI_LOGTO="/var/log/hh-career-fair/uwsgi.log"
+UWSGI_HTTP="0.0.0.0:9000"
+UWSGI_DISABLE_LOGGING=true

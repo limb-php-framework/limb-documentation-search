@@ -1,3 +1,0 @@
-#!/bin/sh
-
-chmod 777 /usr/share/limb-docs-searcher/ -R

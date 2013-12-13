@@ -1,0 +1,18 @@
+# dbus - D-Bus system message bus
+#
+# The D-Bus system message bus allows system daemons and user applications
+# to communicate.
+
+description     "D-Bus system message bus"
+env DEFAULTS="/etc/default/limb-docs-searcher"
+
+pre-start script
+    if [ -f $DEFAULTS ]
+    then
+        . $DEFAULTS
+    fi
+    exec /usr/bin/limb-docs-searcher -Dpidfile.path=/var/run/user/rsa/play.pid &
+end script
+
+post-stop exec kill `cat /var/run/user/rsa/play.pid`
+
