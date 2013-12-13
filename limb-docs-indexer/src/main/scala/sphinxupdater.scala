@@ -11,7 +11,8 @@ import scala.collection.JavaConversions._
 import scala.io.Source
 import scala.collection.mutable.{ArrayBuffer, Buffer}
 import sys.process._
-import java.io.File
+import java.util.Date
+import java.text.SimpleDateFormat
 
 object xmlpipe2Generator {
 
@@ -47,6 +48,21 @@ object xmlpipe2Generator {
     }
   }
 
+  private def getMdFiles(limbDirectory: File, newDB: Boolean, date: Date): List[File] = {
+    if (newDB) {
+      FileUtils.iterateFiles(limbDirectory, Array("md"), true).map{ file => file.asInstanceOf[File] }.toList
+    } else {
+      val dateFormat = new SimpleDateFormat("MMMhh:mm:ss'MSK'y")
+      val cmd = Seq("git --git-dir=", limbDirectory.getAbsolutePath, """/.git log --since="""" + dateFormat.format(date) + "\" --name-only --pretty=format:").mkString
+      val grep = "grep md"
+      val prepareFiles: java.lang.String = try { (cmd #| grep !!) } catch { case e: java.lang.RuntimeException => return List[File]() }
+      if (prepareFiles.length == 0) return List[File]()
+      prepareFiles.split("\n").map{ file =>
+        new File(Seq(limbDirectory.getAbsolutePath, file).mkString("/"))
+      }.toList
+    }
+  }
+
   private def getTextFromHeaderNode(node: Node): String = {
     node.getChildren.map { subNode =>
       if (subNode.getClass == classOf[TextNode]) {
@@ -62,23 +78,38 @@ object xmlpipe2Generator {
   def main(args: Array[String]): Unit = {
     if (config[Boolean]("download_limb_if_no_exists")) {
       if (!(new File(config[String]("limb_local_path"))).exists) {
-        val status = ("git clone " + config[String]("limb_git_path") + " " + config[String]("limb_local_path")) #> (new File("/dev/null")) !
+        val status = Array("git clone", config[String]("limb_git_path"), config[String]("limb_local_path")).mkString(" ") #> (new File("/dev/null")) !
 
         if (status != 0 ) {
           System.exit(status)
         }
       }
+    } else {
+      if (config[Boolean]("update_limb_local_repo")) {
+        val status = ("cd " + config[String]("limb_git_path") + " && git pull ") #> (new File("/dev/null")) !
+      }
     }
     Class.forName("org.sqlite.JDBC")
     val db_file = new File(config[String]("db_path"))
+    var newDB: Boolean = true
     if (db_file.exists) {
-      db_file.delete
+      newDB = false
     }
     val connection = DriverManager.getConnection("jdbc:sqlite:" + config[String]("db_path"))
     val statement = connection.createStatement()
-    statement.executeUpdate("CREATE TABLE id_url (id INTEGER, url TEXT, header TEXT, content TEXT)")
+    var updatedDate = new Date(0)
+    var id = 1
+    if (newDB) {
+      statement.executeUpdate("CREATE TABLE id_url (id INTEGER, url TEXT, header TEXT, content TEXT)")
+      statement.executeUpdate("CREATE TABLE updates (id INTEGER PRIMARY KEY, timestamp TIMESTAMP DEFAULT (datetime('now','localtime')), start_id INTEGER, stop_id INTEGER)")
+    } else {
+      val results = statement.executeQuery("SELECT stop_id, timestamp FROM updates WHERE id=( SELECT max(id) FROM updates )")
+      id = results.getInt("stop_id")
+      val formattedDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+      updatedDate = formattedDate.parse(results.getString("timestamp"))
+    }
     val processor = new PegDownProcessor(Extensions.ALL)
-    val mdFiles = FileUtils.iterateFiles(new File(config[String]("limb_local_path")), Array("md"), true)
+    val limbDirectory = new File(config[String]("limb_local_path"))
     val HEADER = "header"
     val CONTENT = "content"
     val URL = "url"
@@ -86,8 +117,9 @@ object xmlpipe2Generator {
     val desc = IndexDescription.createIndexDescription(HEADER, CONTENT)
     desc.addStr2OrdinalAttribute(URL)
     val index = Index.createIndex(desc)
-    var id = 1
-    for (file <- mdFiles) {
+    val startId = id
+    val mdFiles: List[File] = getMdFiles(limbDirectory, newDB, updatedDate)
+    mdFiles.foreach { file =>
       val mdTree = processor.parseMarkdown(Source.fromFile(file.toString).mkString.toCharArray)
       val element = new SphinxElement
       element.setURL(new File(config[String]("limb_local_path")).toURI.relativize((new File(file.toString)).toURI).getPath)
@@ -120,6 +152,10 @@ object xmlpipe2Generator {
       index.addDocuments(doc)
       id += 1
     }
+    val query = connection.prepareStatement("INSERT INTO updates (start_id, stop_id) VALUES (?, ?)")
+    query.setInt(1, startId)
+    query.setInt(2, id)
+    query.executeUpdate
     index.close()
   }
 }
