@@ -2,14 +2,14 @@ package indexer
 
 import java.sql.DriverManager
 import org.streum.configrity._
-import com.sphinxsearch.indexer.{Document, Index, IndexDescription}
-import org.pegdown.{PegDownProcessor, Extensions}
-import org.pegdown.ast.{TextNode, RootNode, HeaderNode, Node}
+import com.sphinxsearch.indexer.{ Document, Index, IndexDescription }
+import org.pegdown.{ PegDownProcessor, Extensions }
+import org.pegdown.ast.{ TextNode, RootNode, HeaderNode, Node }
 import org.apache.commons.io.FileUtils
 import java.io.File
 import scala.collection.JavaConversions._
 import scala.io.Source
-import scala.collection.mutable.{ArrayBuffer, Buffer}
+import scala.collection.mutable.{ ArrayBuffer, Buffer }
 import sys.process._
 import java.util.Date
 import java.text.SimpleDateFormat
@@ -50,14 +50,14 @@ object xmlpipe2Generator {
 
   private def getMdFiles(limbDirectory: File, newDB: Boolean, date: Date): List[File] = {
     if (newDB) {
-      FileUtils.iterateFiles(limbDirectory, Array("md"), true).map{ file => file.asInstanceOf[File] }.toList
+      FileUtils.iterateFiles(limbDirectory, Array("md"), true).map { file => file.asInstanceOf[File] }.toList
     } else {
       val dateFormat = new SimpleDateFormat("MMMhh:mm:ss'MSK'y")
       val cmd = Seq("git --git-dir=", limbDirectory.getAbsolutePath, """/.git log --since="""" + dateFormat.format(date) + "\" --name-only --pretty=format:").mkString
       val grep = "grep md"
       val prepareFiles: java.lang.String = try { (cmd #| grep !!) } catch { case e: java.lang.RuntimeException => return List[File]() }
       if (prepareFiles.length == 0) return List[File]()
-      prepareFiles.split("\n").map{ file =>
+      prepareFiles.split("\n").map { file =>
         new File(Seq(limbDirectory.getAbsolutePath, file).mkString("/"))
       }.toList
     }
@@ -68,7 +68,7 @@ object xmlpipe2Generator {
       if (subNode.getClass == classOf[TextNode]) {
         omgGetTextFromTextNode(subNode)
       }
-    } filter { _.getClass == classOf[String] } mkString(" ")
+    } filter { _.getClass == classOf[String] } mkString (" ")
   }
 
   private def omgGetTextFromTextNode(node: Node): String = {
@@ -80,7 +80,7 @@ object xmlpipe2Generator {
       if (!(new File(config[String]("limb_local_path"))).exists) {
         val status = Array("git clone", config[String]("limb_git_path"), config[String]("limb_local_path")).mkString(" ") #> (new File("/dev/null")) !
 
-        if (status != 0 ) {
+        if (status != 0) {
           System.exit(status)
         }
       }

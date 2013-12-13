@@ -10,7 +10,7 @@ import scala.io.Source
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.FileUtils
 import scala.collection.JavaConversions._
-import org.pegdown.{PegDownProcessor, Extensions}
+import org.pegdown.{ PegDownProcessor, Extensions }
 import org.sphx.api.SphinxClient
 import scala.collection.mutable.HashMap
 import org.apache.commons.lang3.StringEscapeUtils.escapeHtml4
@@ -19,7 +19,6 @@ import play.api.libs.json.Json.toJson
 import org.sphx.api.SphinxException
 import play.Configuration.root
 import play.Logger
-
 
 object Application extends Controller {
 
@@ -36,12 +35,12 @@ object Application extends Controller {
   private def getResults(keywords: String, offset: Int, limit: Int) = {
     sphinx.SetLimits(offset, limit)
     val docIds = try {
-      sphinx.Query(keywords, "limb").matches.map{_.docId}
+      sphinx.Query(keywords, "limb").matches.map { _.docId }
     } catch {
       case e: NullPointerException => Array()
     }
     var results: Array[Result] = Array()
-    DB.withConnection{ implicit connection =>
+    DB.withConnection { implicit connection =>
       results = docIds.map { docId =>
         val result = new Result
         result.id = docId
@@ -52,13 +51,13 @@ object Application extends Controller {
         result.link = prepareResult.map {
           _[String]("url")
         }.mkString
-        val docs = prepareResult.map{ content =>
-          escapeHtml4( content[String]("content"))
+        val docs = prepareResult.map { content =>
+          escapeHtml4(content[String]("content"))
         }.toArray[String]
         result.snippets = try {
           sphinx.BuildExcerpts(docs, "limb", keywords, HashMap[String, Int]("around" -> 15)).toList
         } catch {
-          case e: SphinxException =>  List[String]()
+          case e: SphinxException => List[String]()
         }
         result
       }
@@ -82,8 +81,7 @@ object Application extends Controller {
           "id" -> toJson(result.id),
           "header" -> toJson(result.header),
           "snippets" -> toJson(result.snippets),
-          "link" -> toJson(result.link)
-        ))
+          "link" -> toJson(result.link)))
       }.toList))
     Ok(toJson(results))
   }
