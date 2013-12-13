@@ -8,9 +8,9 @@
   <br>
   @if(results.length != 0) {
     <ol>
-    @results.map { row =>
+    @for(row <- results) { row
      <li> <a target="_blank" href="https://github.com/limb-php-framework/limb/blob/master/@row.link">@row.header</a> </li>
-     @row.snippets.map { snippet =>
+     @for(snippet <- row.snippets) {
        @Html(snippet)
        <br>
      }
