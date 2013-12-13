@@ -13,4 +13,4 @@ pre-start script
     exec su -s /bin/sh -c '/usr/bin/limb-docs-searcher -Dpidfile.path=$PID -Dhttp.port=$PORT' $USER &
 end script
 
-post-stop exec kill `cat /var/run/user/rsa/play.pid`
+post-stop exec kill `cat $PID`
