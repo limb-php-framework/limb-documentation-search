@@ -1,18 +1,16 @@
-# dbus - D-Bus system message bus
-#
-# The D-Bus system message bus allows system daemons and user applications
-# to communicate.
-
-description     "D-Bus system message bus"
+description     "Limb documents searcher"
 env DEFAULTS="/etc/default/limb-docs-searcher"
+
+env USER=limb
+env PORT=9000
+env PID="/var/run/limb-docs-searcher/play.pid"
 
 pre-start script
     if [ -f $DEFAULTS ]
     then
         . $DEFAULTS
     fi
-    exec /usr/bin/limb-docs-searcher -Dpidfile.path=/var/run/user/rsa/play.pid &
+    exec su -s /bin/sh -c '/usr/bin/limb-docs-searcher -Dpidfile.path=$PID -Dhttp.port=$PORT' $USER &
 end script
 
 post-stop exec kill `cat /var/run/user/rsa/play.pid`
-
