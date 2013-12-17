@@ -1,4 +1,4 @@
-@(results: Array[controllers.Application.Result])
+@(results: Array[controllers.Searcher.Result])
 
 <div class="content">
 @main("Результаты поиска") {
@@ -9,8 +9,8 @@
   @if(results.length != 0) {
     <ol>
     @for(row <- results) {
-     <li> <a target="_blank" href="https://github.com/limb-php-framework/limb/blob/master/@row.link">@row.header</a> </li>
-     @for(snippet <- row.snippets) {
+     <li> <a target="_blank" href="https://github.com/limb-php-framework/limb/blob/master/@row.getLink">@row.getHeader</a> </li>
+     @for(snippet <- row.getSnippets) {
        @Html(snippet)
        <br>
      }
