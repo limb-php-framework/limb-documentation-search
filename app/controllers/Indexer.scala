@@ -54,10 +54,20 @@ object Indexer extends Controller {
     }
   }
 
+  private val devNull = new File("/dev/null")
+
+  private def cloningRepository = {
+    Seq("git clone", root.getString("limb_git_path"), root.getString("limb_local_path")).mkString(" ") #> devNull !
+  }
+
+  private def updatingRepository = {
+    Seq("cd", root.getString("limb_git_path"), "&& git pull").mkString(" ") #> devNull !
+  }
+
   private def initRepository = {
     if (root.getBoolean("download_limb_if_not_exists")) {
       if (!(new File(root.getString("limb_local_path"))).exists) {
-        val status = Seq("git clone", root.getString("limb_git_path"), root.getString("limb_local_path")).mkString(" ") #> (new File("/dev/null")) !
+        val status = cloningRepository
 
         if (status == 0 ) {
           Logger("application").info("Cloned repository")
@@ -67,7 +77,7 @@ object Indexer extends Controller {
       }
     } else {
       if (root.getBoolean("update_limb_local_repo")) {
-        val status = ("cd " + root.getString("limb_git_path") + " && git pull ") #> (new File("/dev/null")) !
+        val status = updatingRepository
 
         if (status == 0 ) {
           Logger("application").info("Cloned repository")
