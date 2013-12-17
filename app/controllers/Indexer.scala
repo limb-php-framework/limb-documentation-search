@@ -69,7 +69,7 @@ object Indexer extends Controller {
       if (!(new File(root.getString("limb_local_path"))).exists) {
         val status = cloningRepository
 
-        if (status == 0 ) {
+        if (status == 0) {
           Logger("application").info("Cloned repository")
         } else {
           Logger("application").error("Failed to clone the repository. Status code " + status)
@@ -79,7 +79,7 @@ object Indexer extends Controller {
       if (root.getBoolean("update_limb_local_repo")) {
         val status = updatingRepository
 
-        if (status == 0 ) {
+        if (status == 0) {
           Logger("application").info("Cloned repository")
         } else {
           Logger("application").error("Failed to update the repository. Status code " + status)
