@@ -54,6 +54,30 @@ object Indexer extends Controller {
     }
   }
 
+  private def initRepository = {
+    if (root.getBoolean("download_limb_if_not_exists")) {
+      if (!(new File(root.getString("limb_local_path"))).exists) {
+        val status = Seq("git clone", root.getString("limb_git_path"), root.getString("limb_local_path")).mkString(" ") #> (new File("/dev/null")) !
+
+        if (status == 0 ) {
+          Logger("application").info("Cloned repository")
+        } else {
+          Logger("application").error("Failed to clone the repository. Status code " + status)
+        }
+      }
+    } else {
+      if (root.getBoolean("update_limb_local_repo")) {
+        val status = ("cd " + root.getString("limb_git_path") + " && git pull ") #> (new File("/dev/null")) !
+
+        if (status == 0 ) {
+          Logger("application").info("Cloned repository")
+        } else {
+          Logger("application").error("Failed to update the repository. Status code " + status)
+        }
+      }
+    }
+  }
+
   private def omgGetTextFromTextNode(node: Node): String = {
     node.asInstanceOf[TextNode].getText
   }
@@ -79,6 +103,7 @@ object Indexer extends Controller {
   private def indexation = {
     new Thread(new Runnable {
       def run() {
+        initRepository
         val processor = new PegDownProcessor(Extensions.ALL)
         val limbDirectory = new File(root.getString("limb_local_path"))
         var updatedDate = new Date(0)
