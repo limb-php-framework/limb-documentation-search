@@ -53,6 +53,18 @@ linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
 
 linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
   (packageMapping(
+    (bd / "debian/limb-docs-searcher.cron.d") -> "etc/cron.d/limb-docs-searcher"
+  ) withUser "root" withGroup "root" withPerms "0755") asDocs()
+}
+
+linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
+  (packageMapping(
     (bd / "debian/changelog") -> "DEBIAN/changelog"
   ) withUser "root" withGroup "root" withPerms "0755") asDocs()
+}
+
+linuxPackageMappings in Debian <+= (baseDirectory) map { bd =>
+  (packageMapping(
+    (bd / "debian/sphinx.conf") -> "etc/limb-docs-indexer/sphinx.conf"
+  ) withUser "root" withGroup "root" withPerms "0775") asDocs()
 }
