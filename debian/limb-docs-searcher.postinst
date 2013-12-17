@@ -1,7 +1,8 @@
 #!/bin/sh
 
-chmod 755 /usr/share/limb-docs-searcher/ -R
+USER=limb_docs_searcher
+
 mkdir /var/run/limb-docs-searcher/
-useradd limb
-chown limb /var/run/limb-docs-searcher/ -R
-chown limb /var/log/limb-docs-searcher/ -R
+useradd $USER
+chown $USER /var/run/limb-docs-searcher/ -R
+chown $USER /var/log/limb-docs-searcher/ -R
