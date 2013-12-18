@@ -176,7 +176,7 @@ object Indexer extends Controller {
   def update = Action { request =>
     val token = request.body.asFormUrlEncoded.get("token").head
     if (token != root.getString("secret_token_for_indexing")) {
-      Forbidden("No access")
+      Forbidden("Access denied")
     } else {
       indexation.start
       Ok("Started indexing")
