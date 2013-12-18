@@ -123,7 +123,9 @@ object Indexer extends Controller {
             updatedDate = dateFormat.parse(row[String]("timestamp"))
           }
         }
+        Logger("application").info("Complete database started")
         getMdFiles(limbDirectory, updatedDate).foreach { file =>
+          Logger("application").debug("Handling " + file.getAbsolutePath)
           val source = Source.fromFile(file).mkString.toCharArray
           val mdTree = processor.parseMarkdown(source)
           val element = new SphinxElement
@@ -161,6 +163,7 @@ object Indexer extends Controller {
         DB.withConnection { implicit connection =>
           SQL("UPDATE updates SET id = {id}, timestamp = NOW()").on("id" -> Id).executeUpdate()
         }
+        Logger("application").info("Complete database completed")
       }
     })
   }
