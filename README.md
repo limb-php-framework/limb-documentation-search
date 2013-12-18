@@ -34,6 +34,8 @@ Limb docs searcher
     $ dpkg -i sbt.deb
 3. Накатываем на базу иницилазационные скрипты из папки `init` сначала `bootstrap.sql`, затем `data.sql`
 4. Запускаем searchd c конфигом, который в debian/sphinx.conf
+
+    $ searchd -c debian/sphinx.conf
 5. Исправляем настройки в файле conf/application.conf (Параметры подключения к БД, параметры подключения к Sphinx)
 6. Запускем development-сервер
    $ sbt run
@@ -56,6 +58,8 @@ Limb docs searcher
    $ gdebi target/limb-docs-searcher_<версия>.deb
 5. Настройки приложения находятся в файле `/etc/limb-docs-searcher/application.conf`
 6. Настроить подключение к базе данных (параметры db.default.*)
+7. Запустить searchd (демон сфинкса)
+   $ searchd -c /etc/limb-docs-indexer/sphinx.conf
 
 **Управление сервером**
 
