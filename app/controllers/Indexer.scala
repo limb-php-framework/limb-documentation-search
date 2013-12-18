@@ -25,9 +25,9 @@ object Indexer extends Controller {
 
   class SphinxElement {
 
-    private var header: String = null
-    private var content: String = null
-    private var url: String = null
+    private var header: String = ""
+    private var content: String = ""
+    private var url: String = ""
 
     def getHeader: String = {
       header
