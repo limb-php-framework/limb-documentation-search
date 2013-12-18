@@ -51,7 +51,7 @@ object Searcher extends Controller {
   private def getResults(keywords: String, offset: Int, limit: Int) = {
     sphinx.SetLimits(offset, limit)
     val docIds = try {
-      sphinx.Query(keywords, "limb").matches.map { _.docId }
+      sphinx.Query(keywords, root.getString("indexName")).matches.map { _.docId }
     } catch {
       case e: NullPointerException => Array()
     }
