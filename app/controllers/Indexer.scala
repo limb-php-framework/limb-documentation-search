@@ -140,6 +140,8 @@ object Indexer extends Controller {
                   element.addHeader(getTextFromHeaderNode(node))
                   firstHeader = false
                   getTextFromOtherNodes(node.getChildren)
+                } else {
+                  element.addContent(getTextFromHeaderNode(node))
                 }
                 case _ => getTextFromOtherNodes(node.getChildren)
               }
