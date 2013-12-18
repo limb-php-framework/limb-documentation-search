@@ -1,7 +1,7 @@
 GET     /                    controllers.Searcher.index
 GET     /search              controllers.Searcher.search(s: String ?= "", offset: Int ?= 1, limit: Int ?= 20, autoload: Boolean ?= true)
 GET     /search.json         controllers.Searcher.searchJson(s: String ?= "", offset: Int ?= 1, limit: Int ?= 20)
-POST     /update              controllers.Indexer.update(token: String)
+POST     /update              controllers.Indexer.update
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file        controllers.Assets.at(path="/public", file)
