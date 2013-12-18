@@ -1,10 +1,11 @@
 import com.typesafe.sbt.SbtNativePackager._
 import com.typesafe.sbt.packager.Keys._
 import sbt._
+import sys.process.stringToProcess
 
 name := "limb-docs-searcher"
 
-version := "1.0-SNAPSHOT"
+version := ("dpkg-parsechangelog" !!).split("\n")(1).replace("Version: ", "")
 
 libraryDependencies ++= Seq(
   jdbc,
