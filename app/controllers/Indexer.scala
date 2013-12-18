@@ -88,14 +88,15 @@ object Indexer extends Controller {
     }
   }
 
-  private def omgGetTextFromTextNode(node: Node): String = {
+  // encapsulation incomprehensible moment, because of which it is necessary to do asInstanceOf byd method getText
+  private def getTextFromTextNode(node: Node): String = {
     node.asInstanceOf[TextNode].getText
   }
 
   private def getTextFromHeaderNode(node: Node): String = {
     node.getChildren.map { subNode =>
       if (subNode.getClass == classOf[TextNode]) {
-        omgGetTextFromTextNode(subNode)
+        getTextFromTextNode(subNode)
       }
     }.filter { _.getClass == classOf[String] }.mkString(" ")
   }
@@ -135,7 +136,7 @@ object Indexer extends Controller {
           def getTextFromOtherNodes(nodeList: java.util.List[Node]): Unit = {
             nodeList.foreach { node =>
               node match {
-                case _: TextNode => element.addContent(omgGetTextFromTextNode(node))
+                case _: TextNode => element.addContent(getTextFromTextNode(node))
                 case _: HeaderNode => if (firstHeader) {
                   element.addHeader(getTextFromHeaderNode(node))
                   firstHeader = false
