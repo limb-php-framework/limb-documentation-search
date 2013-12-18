@@ -161,7 +161,7 @@ object Indexer extends Controller {
           }
         }
         DB.withConnection { implicit connection =>
-          SQL("UPDATE updates SET id = {id}, timestamp = NOW()").on("id" -> Id).executeUpdate()
+          SQL("UPDATE updates SET timestamp = NOW()").executeUpdate()
         }
         Logger("application").info("Complete database completed")
       }
