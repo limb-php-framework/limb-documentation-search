@@ -56,12 +56,14 @@ object Indexer extends Controller {
 
   private val devNull = new File("/dev/null")
 
+  def shellCommandExecute(args: String*) = args.mkString(" ") #> devNull !
+
   private def cloningRepository = {
-    Seq("git clone", root.getString("limb_git_path"), root.getString("limb_local_path")).mkString(" ") #> devNull !
+    shellCommandExecute("git clone", root.getString("limb_git_path"), root.getString("limb_local_path"))
   }
 
   private def updatingRepository = {
-    Seq("cd", root.getString("limb_git_path"), "&& git pull").mkString(" ") #> devNull !
+    shellCommandExecute("cd", root.getString("limb_git_path"), "&& git pull")
   }
 
   private def initRepository = {
@@ -173,7 +175,6 @@ object Indexer extends Controller {
 
   def update = Action { request =>
     val token = request.body.asFormUrlEncoded.get("token").head
-    println(token)
     if (token != root.getString("secret_token_for_indexing")) {
       Forbidden("No access")
     } else {
