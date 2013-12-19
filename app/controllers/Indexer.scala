@@ -6,7 +6,6 @@ import play.api._
 import play.api.mvc._
 import anorm._
 import java.sql.DriverManager
-import org.streum.configrity._
 import org.pegdown.{ PegDownProcessor, Extensions }
 import org.pegdown.ast.{ TextNode, RootNode, HeaderNode, Node }
 import org.apache.commons.io.FileUtils
