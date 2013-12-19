@@ -5,7 +5,7 @@ import sys.process.stringToProcess
 
 name := "limb-docs-searcher"
 
-version := ("dpkg-parsechangelog" !!).split("\n")(1).replace("Version: ", "") + "-all"
+version := ("dpkg-parsechangelog" !!).split("\n")(1).replace("Version: ", "")
 
 libraryDependencies ++= Seq(
   jdbc,
@@ -14,10 +14,8 @@ libraryDependencies ++= Seq(
   "postgresql" % "postgresql" % "9.1-901.jdbc4",
   "org.sphinx" % "sphinxapi" % "2.0.3",
   "org.apache.commons" % "commons-io" % "1.3.2",
-  "eu.henkelmann" % "actuarius_2.10.0" % "0.2.6",
   "org.apache.commons" % "commons-lang3" % "3.1",
-  "org.pegdown" % "pegdown" % "1.0.1",
-  "org.streum" %% "configrity-core" % "1.0.0"
+  "org.pegdown" % "pegdown" % "1.0.1"
 )
 
 resolvers += "Repo" at "http://evgenyg.artifactoryonline.com/evgenyg/list/libs-releases/"
