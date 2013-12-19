@@ -22,6 +22,10 @@ resolvers += "Repo" at "http://evgenyg.artifactoryonline.com/evgenyg/list/libs-r
 
 play.Project.playScalaSettings
 
+packageArchitecture in Debian := "all"
+
+target in Debian <<= (target, name in Debian, version in Debian, packageArchitecture in Debian) apply ((t, n, v, q) => t / (n + "-" + v + "_" + q))
+
 description in Linux := "Limb documents searcher"
 
 packageDescription in Linux := "Limb documents searcher"
