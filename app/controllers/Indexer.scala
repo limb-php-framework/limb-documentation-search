@@ -113,26 +113,61 @@ object Indexer extends Controller {
     }.filter { file => "md" == FilenameUtils.getExtension(file.getAbsolutePath) && file.exists }.toList
   }
 
+  private def getUpdatedDate = {
+    var updatedDate = new Date(0)
+    val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    DB.withConnection { implicit connection =>
+      SQL("SELECT to_char(timestamp, 'YYYY-MM-DD HH:MM:SS') as timestamp FROM updates")().foreach { row =>
+        updatedDate = dateFormat.parse(row[String]("timestamp"))
+      }
+    }
+    updatedDate
+  }
+
+  private def getMdTree(file: File) = {
+    val processor = new PegDownProcessor(Extensions.ALL)
+    val source = Source.fromFile(file).mkString.toCharArray
+    processor.parseMarkdown(source)
+  }
+
+  private def getFileURL(file: File) = {
+    (new File(root.getString("limb_local_path")).toURI.relativize((new File(file.toString)).toURI)).getPath
+  }
+
+  private def saveTree(element: SphinxElement): Unit = {
+    DB.withConnection { implicit connection =>
+      if (SQL("SELECT url FROM files WHERE url = {url}").on("url" -> element.getURL)().map { _[String]("url") }.mkString.length > 0) {
+        SQL("UPDATE files SET url={url}, header={header}, content={content} WHERE url={url}").on(
+          "url" -> element.getURL,
+          "header" -> element.getHeader,
+          "content" -> element.getContent).executeUpdate()
+      } else {
+        SQL("INSERT INTO files (url, header, content) VALUES ({url}, {header}, {content})").on(
+          "url" -> element.getURL,
+          "header" -> element.getHeader,
+          "content" -> element.getContent).execute()
+      }
+    }
+  }
+
+  private def updateDate: Unit = {
+    DB.withConnection { implicit connection =>
+      SQL("UPDATE updates SET timestamp = NOW()").executeUpdate()
+    }
+  }
+
   private def indexation = {
     new Thread(new Runnable {
       def run() {
         initRepository
-        val processor = new PegDownProcessor(Extensions.ALL)
         val limbDirectory = new File(root.getString("limb_local_path"))
-        var updatedDate = new Date(0)
-        val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        DB.withConnection { implicit connection =>
-          SQL("SELECT to_char(timestamp, 'YYYY-MM-DD HH:MM:SS') as timestamp FROM updates")().foreach { row =>
-            updatedDate = dateFormat.parse(row[String]("timestamp"))
-          }
-        }
+        var updatedDate = getUpdatedDate
         Logger("application").info("Complete database started")
         getMdFiles(limbDirectory, updatedDate).foreach { file =>
           Logger("application").debug("Handling " + file.getAbsolutePath)
-          val source = Source.fromFile(file).mkString.toCharArray
-          val mdTree = processor.parseMarkdown(source)
+          val mdTree = getMdTree(file)
           val element = new SphinxElement
-          val fileURL = (new File(root.getString("limb_local_path")).toURI.relativize((new File(file.toString)).toURI)).getPath
+          val fileURL = getFileURL(file)
           element.setURL(fileURL)
           var firstHeader = true
           def getTextFromOtherNodes(nodeList: java.util.List[Node]): Unit = {
@@ -151,23 +186,9 @@ object Indexer extends Controller {
             }
           }
           getTextFromOtherNodes(mdTree.getChildren)
-          DB.withConnection { implicit connection =>
-            if (SQL("SELECT url FROM files WHERE url = {url}").on("url" -> element.getURL)().map { _[String]("url") }.mkString.length > 0) {
-              SQL("UPDATE files SET url={url}, header={header}, content={content} WHERE url={url}").on(
-                "url" -> element.getURL,
-                "header" -> element.getHeader,
-                "content" -> element.getContent).executeUpdate()
-            } else {
-              SQL("INSERT INTO files (url, header, content) VALUES ({url}, {header}, {content})").on(
-                "url" -> element.getURL,
-                "header" -> element.getHeader,
-                "content" -> element.getContent).execute()
-            }
-          }
+          saveTree(element)
         }
-        DB.withConnection { implicit connection =>
-          SQL("UPDATE updates SET timestamp = NOW()").executeUpdate()
-        }
+        updateDate
         Logger("application").info("Complete database completed")
       }
     })
