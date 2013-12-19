@@ -1,5 +1,16 @@
-import AssemblyKeys._ // put this at the top of the file
+import AssemblyKeys._
 
 assemblySettings
 
-// your assembly settings here
+test in assembly := {}
+
+jarName in assembly := "searcher.jar"
+
+mergeStrategy in assembly <<= (mergeStrategy in assembly) { mergeStrategy => {
+  case entry => {
+    val strategy = mergeStrategy(entry)
+    if (strategy == MergeStrategy.deduplicate) MergeStrategy.first
+    else strategy
+  }
+}
+}
