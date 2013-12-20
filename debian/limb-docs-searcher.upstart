@@ -1,16 +1,17 @@
 description     "Limb documents searcher"
 env DEFAULTS="/etc/default/limb-docs-searcher"
 
-env USER=limb_docs_searcher
+env USER=limbdocssearcher
 env PORT=9000
-env PID="/var/run/limb-docs-searcher/play.pid"
+env PID="/var/run/limb-docs-searcher/limb-docs-searcher.pid"
+env CONFIG="/usr/share/limb-docs-searcher/conf/application.conf"
 
 pre-start script
     if [ -f $DEFAULTS ]
     then
         . $DEFAULTS
     fi
-    exec su -s /bin/sh -c '/usr/bin/limb-docs-searcher -Dpidfile.path=$PID -Dhttp.port=$PORT' $USER &
+    exec su -s /bin/sh -c '/usr/bin/limb-docs-searcher -Dpidfile.path=$PID -Dhttp.port=$PORT -Dconfig.file=$CONFIG' $USER &
 end script
 
 post-stop exec kill `cat $PID`
