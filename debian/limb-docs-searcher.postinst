@@ -1,10 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
-USER=limb_docs_searcher
-mkdir /var/log/limb-docs-searcher/
-mkdir /var/run/limb-docs-searcher/
-mkdir /var/lib/limb-docs/
-useradd $USER
+USER=limbdocssearcher
+
+grep "$USER:" /etc/passwd >/dev/null
+if [ $? -ne 0 ]; then
+    useradd $USER
+fi
+
 chown $USER /var/lib/limb-docs/ -R
 chown $USER /var/run/limb-docs-searcher/ -R
 chown $USER /var/log/limb-docs-searcher/ -R
