@@ -1,4 +1,3 @@
-USER=limbdocssearcher
 PORT=9000
 PID="/var/run/limb-docs-searcher/limb-docs-searcher.pid"
 CONFIG="/etc/limb-docs-searcher/application.conf"
