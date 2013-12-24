@@ -59,7 +59,7 @@ Limb docs searcher
 5. Настройки приложения находятся в файле `/etc/limb-docs-searcher/application.conf`
 6. Настроить подключение к базе данных (параметры db.default.*)
 7. Запустить searchd (демон сфинкса)
-   $ searchd -c /etc/limb-docs-indexer/sphinx.conf
+   $ searchd -c /etc/limb-docs-searcher/sphinx.conf
 
 **Управление сервером**
 
