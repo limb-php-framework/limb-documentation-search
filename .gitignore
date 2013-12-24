@@ -15,4 +15,10 @@ dist
 /.settings
 /limb-docs-indexer/id_url.db
 /limb/
-
+debian/files
+debian/limb-docs-searcher.debhelper.log
+debian/limb-docs-searcher.postinst.debhelper
+debian/limb-docs-searcher.preinst.debhelper
+debian/limb-docs-searcher.prerm.debhelper
+debian/limb-docs-searcher.substvars
+debian/limb-docs-searcher/
