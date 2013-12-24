@@ -1,0 +1,16 @@
+Source: limb-docs-searcher
+Section: java
+Priority: extra
+Maintainer: Andrew Rezcov <rsa199@ya.ru>
+Build-Depends:
+  sbt,
+  debhelper
+Standards-Version: 3.9.4
+
+Package: limb-docs-searcher
+Section: java
+Priority: optional
+Architecture: all
+Depends: default-jdk  (>= 1.7)
+Description: Limb docs searcher
+ Limb documents searcher

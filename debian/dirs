@@ -1,0 +1,3 @@
+var/log/limb-docs-searcher/
+var/run/limb-docs-searcher/
+var/lib/limb-docs-searcher/

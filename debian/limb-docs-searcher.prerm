@@ -1,0 +1,4 @@
+#!/bin/bash
+
+stop limb-docs-searcher 2> /dev/null
+deluser limbdocssearcher > /dev/null
