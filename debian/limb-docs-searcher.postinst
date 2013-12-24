@@ -7,6 +7,6 @@ if [ $? -ne 0 ]; then
     useradd $USER
 fi
 
-chown $USER /var/lib/limb-docs/ -R
+chown $USER /var/lib/limb-docs-searcher/ -R
 chown $USER /var/run/limb-docs-searcher/ -R
 chown $USER /var/log/limb-docs-searcher/ -R
