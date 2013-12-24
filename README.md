@@ -51,7 +51,7 @@ Limb docs searcher
    * `init/data.sql`
 4. Собрать deb-пакет
 
-   $ sbt clean debian:package-bin
+   $ debuild -us -uc
  В результате получим пакет limb-docs-searcher
 5. Установить deb пакет в систему
 
