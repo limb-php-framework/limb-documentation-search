@@ -2,3 +2,4 @@ USER=limbdocssearcher
 PORT=9000
 PID="/var/run/limb-docs-searcher/limb-docs-searcher.pid"
 CONFIG="/usr/share/limb-docs-searcher/conf/application.conf"
+LOGGER_FILE="/usr/share/limb-docs-searcher/conf/logger.xml"
