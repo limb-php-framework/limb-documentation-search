@@ -4,15 +4,15 @@ env DEFAULTS="/etc/default/limb-docs-searcher"
 env USER=limbdocssearcher
 env PORT=9000
 env PID="/var/run/limb-docs-searcher/limb-docs-searcher.pid"
-env CONFIG="/usr/share/limb-docs-searcher/conf/application.conf"
-env LOGGER_FILE="/usr/share/limb-docs-searcher/conf/logger.xml"
+env CONFIG="/etc/limb-docs-searcher/application.conf"
+env LOGGER_FILE="/etc/limb-docs-searcher/logger.xml"
 
-pre-start script
+expect daemon
+
+script
     if [ -f $DEFAULTS ]
     then
         . $DEFAULTS
     fi
     exec start-stop-daemon -b --start -c $USER --exec /usr/bin/limb-docs-searcher -- -Dpidfile.path=$PID -Dhttp.port=$PORT -Dconfig.file=$CONFIG -Dlogger.file=$LOGGER_FILE
 end script
-
-post-stop exec kill -TERM `cat $PID`
