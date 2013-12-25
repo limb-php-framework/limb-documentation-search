@@ -2,3 +2,4 @@ PORT=9000
 PID="/var/run/limb-docs-searcher/limb-docs-searcher.pid"
 CONFIG="/etc/limb-docs-searcher/application.conf"
 LOGGER_FILE="/etc/limb-docs-searcher/logger.xml"
+LANG=en_US.utf8

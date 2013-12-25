@@ -7,6 +7,7 @@ env PORT=9000
 env PID="/var/run/limb-docs-searcher/limb-docs-searcher.pid"
 env CONFIG="/etc/limb-docs-searcher/application.conf"
 env LOGGER_FILE="/etc/limb-docs-searcher/logger.xml"
+env LANG=en_US.utf8
 
 script
     if [ -f $DEFAULTS ]
