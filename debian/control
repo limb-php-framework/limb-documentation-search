@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Andrew Rezcov <rsa199@ya.ru>
 Build-Depends:
   sbt,
-  debhelper
+  debhelper (>= 9)
 Standards-Version: 3.9.4
 
 Package: limb-docs-searcher
