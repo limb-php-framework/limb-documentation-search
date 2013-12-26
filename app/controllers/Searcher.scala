@@ -83,7 +83,7 @@ object Searcher extends Controller {
 
   def search(keywords: String, offset: Int, limit: Int, autoload: Boolean) = Action {
     val results = getResults(keywords, offset, limit)
-    Ok(views.html.search(results))
+    Ok(views.html.search(results, keywords))
   }
 
   def searchJson(keywords: String, offset: Int, limit: Int) = Action {

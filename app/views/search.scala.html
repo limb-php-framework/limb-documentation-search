@@ -1,8 +1,8 @@
-@(results: Array[controllers.Searcher.Result])
+@(results: Array[controllers.Searcher.Result], keywords: String)
 
 <div class="content">
 @main("Результаты поиска") {
-  @form()
+  @form(keywords)
   <b>Показано @results.length документов</b>
   <br>
   <br>
