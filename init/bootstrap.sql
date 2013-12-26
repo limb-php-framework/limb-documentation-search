@@ -1,5 +1,3 @@
-CREATE DATABASE "limb-docs-searcher";
-
 CREATE SCHEMA "limb-docs-searcher";
 SET search_path = 'limb-docs-searcher';
 
