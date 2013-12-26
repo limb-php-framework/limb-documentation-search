@@ -33,9 +33,9 @@ Limb docs searcher
     $ wget http://repo.scala-sbt.org/scalasbt/sbt-native-packages/org/scala-sbt/sbt/0.13.0/sbt.deb
     $ dpkg -i sbt.deb
 3. Накатываем на базу иницилазационные скрипты из папки `init` сначала `bootstrap.sql`, затем `data.sql`
-4. Запускаем searchd c конфигом, который в debian/sphinx.conf
+4. Запускаем searchd c конфигом, который в conf/sphinx.conf
 
-    $ searchd -c debian/sphinx.conf
+    $ searchd -c conf/sphinx.conf
 5. Исправляем настройки в файле conf/application.conf (Параметры подключения к БД, параметры подключения к Sphinx)
 6. Запускем development-сервер
    $ sbt run
