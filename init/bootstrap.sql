@@ -1,9 +1,10 @@
 CREATE DATABASE "limb-docs-searcher";
-\connect limb-docs-searcher;
+
 CREATE SCHEMA "limb-docs-searcher";
 SET search_path = 'limb-docs-searcher';
 
 CREATE USER "limb-docs-searcher" UNENCRYPTED PASSWORD '123';
+ALTER USER "limb-docs-searcher" SET search_path = 'limb-docs-searcher';
 
 GRANT USAGE ON SCHEMA "limb-docs-searcher" TO "limb-docs-searcher";
 
