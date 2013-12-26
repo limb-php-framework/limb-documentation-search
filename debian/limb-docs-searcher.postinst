@@ -1,12 +1,13 @@
 #!/bin/bash
 
 USER=limbdocssearcher
+GROUP=$USER
 
 grep "$USER:" /etc/passwd >/dev/null
 if [ $? -ne 0 ]; then
     useradd $USER
 fi
 
-chown $USER /var/lib/limb-docs-searcher/ -R
-chown $USER /var/run/limb-docs-searcher/ -R
-chown $USER /var/log/limb-docs-searcher/ -R
+chown $USER:$GROUP /var/lib/limb-docs-searcher/ -R
+chown $USER:$GROUP /var/run/limb-docs-searcher/ -R
+chown $USER:$GROUP /var/log/limb-docs-searcher/ -R
