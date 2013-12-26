@@ -2,4 +2,4 @@ bin/limb-docs-searcher /usr/bin/
 conf/application.conf /etc/limb-docs-searcher/
 conf/logger.xml /etc/limb-docs-searcher/
 target/scala-2.10/searcher.jar /usr/share/limb-docs-searcher/
-debian/sphinx.conf /etc/limb-docs-searcher
+conf/sphinx.conf /etc/limb-docs-searcher
