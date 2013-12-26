@@ -5,8 +5,6 @@ import sys.process.stringToProcess
 
 name := "limb-docs-searcher"
 
-version := ("dpkg-parsechangelog" !!).split("\n")(1).replace("Version: ", "")
-
 libraryDependencies ++= Seq(
   jdbc,
   anorm,
