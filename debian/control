@@ -11,6 +11,7 @@ Package: limb-docs-searcher
 Section: java
 Priority: optional
 Architecture: all
-Depends: default-jdk  (>= 1.7)
+Depends: ${misc:Depends},
+  default-jdk  (>= 1.7)
 Description: Limb docs searcher
  Limb documents searcher
