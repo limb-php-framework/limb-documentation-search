@@ -2,3 +2,5 @@
 
 stop limb-docs-searcher 2> /dev/null
 deluser limbdocssearcher > /dev/null
+
+exit 0
