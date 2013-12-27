@@ -22,3 +22,7 @@ debian/limb-docs-searcher.preinst.debhelper
 debian/limb-docs-searcher.prerm.debhelper
 debian/limb-docs-searcher.substvars
 debian/limb-docs-searcher/
+debian/limb-docs-searcher-static.debhelper.log
+debian/limb-docs-searcher-static.substvars
+debian/limb-docs-searcher-static/
+
