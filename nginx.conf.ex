@@ -13,8 +13,7 @@ server {
        listen 80;
 
        location /assets/* {
-               root         /usr/share/limb-docs-searcher-static/public/;
-               access_log   off;
+               proxy_pass  http://192.168.0.100;
        }
        location / {
                proxy_pass  http://limbdocssearcher;
