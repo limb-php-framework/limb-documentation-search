@@ -33,12 +33,13 @@ Limb docs searcher
     $ wget http://repo.scala-sbt.org/scalasbt/sbt-native-packages/org/scala-sbt/sbt/0.13.0/sbt.deb
     $ dpkg -i sbt.deb
 3. Накатываем на базу иницилазационные скрипты из папки `init` сначала `bootstrap.sql`, затем `data.sql`
-4. Запускаем searchd c конфигом, который в conf/sphinx.conf
+4. Запускаем searchd c конфигом (не забываем отредактировать его, параметры БД поменять например), который в conf/sphinx.conf
 
     $ searchd -c conf/sphinx.conf
 5. Исправляем настройки в файле conf/application.conf (Параметры подключения к БД, параметры подключения к Sphinx)
 6. Запускем development-сервер
    $ sbt run
+7. Если нужно запускать с  nginx, то конфиг для него лежит в репозитории, nginx.conf.ex
 
 **Настройка production окружения**
 
@@ -58,8 +59,10 @@ Limb docs searcher
    $ gdebi target/limb-docs-searcher_<версия>.deb
 5. Настройки приложения находятся в файле `/etc/limb-docs-searcher/application.conf`
 6. Настроить подключение к базе данных (параметры db.default.*)
-7. Запустить searchd (демон сфинкса)
+7. Запустить searchd (демон сфинкса) (не забываем отредактировать его, параметры БД поменять например)
+
    $ searchd -c /etc/limb-docs-searcher/sphinx.conf
+8. Взять nginx.conf.ex, подкрутить под себя и скормить nginx'у.
 
 **Управление сервером**
 
