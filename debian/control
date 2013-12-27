@@ -15,3 +15,9 @@ Depends: ${misc:Depends},
   default-jdk  (>= 1.7)
 Description: Limb docs searcher
  Limb documents searcher
+
+Package: limb-docs-searcher-static
+Architecture: all
+Depends: ${misc:Depends}
+Description: Limb documents searcher staic package
+ Contains css, javascript and image files for limb-docs-searcher package
