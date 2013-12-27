@@ -55,22 +55,29 @@ object Searcher extends Controller {
     } catch {
       case e: NullPointerException => Array()
     }
+
     var results: Array[Result] = Array()
+
     DB.withConnection { implicit connection =>
       results = docIds.map { docId =>
         val result = new Result
+
         result.setId(docId)
         val prepareResult = SQL("SELECT url, header, content FROM files WHERE id = {id}").on("id" -> docId)()
         result.setHeader(prepareResult.map { _[String]("header") }.mkString)
         result.setLink(prepareResult.map { _[String]("url") }.mkString)
+
         val docs = prepareResult.map { content =>
           escapeHtml4(content[String]("content"))
         }.toArray[String]
+
         result.setSnippets(try {
           sphinx.BuildExcerpts(docs, root.getString("indexName"), keywords, HashMap[String, Int]("around" -> root.getInt("countSnippets"))).toList
+
         } catch {
           case e: SphinxException => List[String]()
         })
+
         result
       }
     }
