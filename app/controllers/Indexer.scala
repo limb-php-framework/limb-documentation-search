@@ -199,7 +199,7 @@ object Indexer extends Controller {
       Forbidden("Access denied")
     } else {
       indexation.start
-      Ok("Started indexing")
+      Ok("Starting parsing and write to database")
     }
   }
 
