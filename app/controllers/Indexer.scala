@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat
 import play.Configuration.root
 import java.nio.charset.MalformedInputException
 import org.apache.commons.io.FilenameUtils
+import java.util.Date
 
 object Indexer extends Controller {
 
@@ -113,14 +114,8 @@ object Indexer extends Controller {
   }
 
   private def getUpdatedDate = {
-    var updatedDate = new Date(0)
-    val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-    DB.withConnection { implicit connection =>
-      SQL("SELECT to_char(timestamp, 'YYYY-MM-DD HH:MM:SS') as timestamp FROM updates")().foreach { row =>
-        updatedDate = dateFormat.parse(row[String]("timestamp"))
-      }
-    }
-    updatedDate
+    val file = new File(root.getString("last_modified_file"))
+    new Date(file.lastModified)
   }
 
   private def getMdTree(file: File) = {
@@ -150,8 +145,17 @@ object Indexer extends Controller {
   }
 
   private def updateDate: Unit = {
-    DB.withConnection { implicit connection =>
-      SQL("UPDATE updates SET timestamp = NOW()").executeUpdate()
+    val file = new File(root.getString("last_modified_file"))
+    if (file.exists) {
+      val status = file.setLastModified(System.currentTimeMillis)
+      if (!status) {
+        Logger("application").warn("Failed to install the update. Check permissions to last_modified_file.")
+      }
+    } else {
+      val status = file.createNewFile
+      if (!status) {
+        Logger("application").warn("Error creating last_modified_file.")
+      }
     }
   }
 
