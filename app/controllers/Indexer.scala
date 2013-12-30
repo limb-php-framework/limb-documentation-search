@@ -189,7 +189,9 @@ object Indexer extends Controller {
             }
           }
           getTextFromOtherNodes(mdTree.getChildren)
-          saveTree(element)
+          if (!element.getHeader.isEmpty || !element.getContent.isEmpty) {
+            saveTree(element)
+          }
         }
         updateDate
         Logger("application").info("Complete database completed")
