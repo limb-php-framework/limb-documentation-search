@@ -11,7 +11,7 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.FileUtils
 import scala.collection.JavaConversions._
 import org.pegdown.{ PegDownProcessor, Extensions }
-import org.sphx.api.SphinxClient
+import org.sphx.api.{ SphinxClient, SphinxException }
 import scala.collection.mutable.HashMap
 import org.apache.commons.lang3.StringEscapeUtils.escapeHtml4
 import java.lang.NullPointerException
@@ -22,7 +22,7 @@ import play.Logger
 
 object Searcher extends Controller {
 
-  private val sphinx = new SphinxClient
+  val sphinx = new SphinxClient
   sphinx.SetServer(root.getString("sphinxServer"), root.getInt("sphinxPort"))
 
   class Result {
@@ -48,18 +48,53 @@ object Searcher extends Controller {
     def setLink(value: String) = link = value
   }
 
-  private def getResults(keywords: String, offset: Int, limit: Int) = {
-    sphinx.SetLimits(offset, limit)
-    val docIds = try {
-      sphinx.Query(keywords, root.getString("indexName")).matches.map { _.docId }
-    } catch {
-      case e: NullPointerException => Array()
+  class Results {
+    private var results: Array[Result] = Array()
+    private var found: Int = 0
+    private var keywords: String = ""
+    private var page: Int = 1
+
+    def getResults = results
+
+    def setResults(value: Array[Result]) = results = value
+
+    def getFound = found
+
+    def setFound(value: Int) = found = value
+
+    def getKeywords = keywords
+
+    def setKeywords(value: String) = keywords = value
+
+    def getPage = page
+
+    def setPage(value: Int) = page = value
+
+    def getPageCount: Int = {
+      val entirePages = (found / root.getInt("page_results"))
+      if (found > entirePages * root.getInt("page_results")) {
+        return entirePages + 1
+      }
+      return entirePages
+    }
+  }
+
+  private def getResults(keywords: String, page: Int) = {
+
+    sphinx.SetLimits(root.getInt("page_results") * page - root.getInt("page_results"), root.getInt("page_results"))
+    val queryResults = sphinx.Query(keywords, root.getString("indexName"))
+
+    if (queryResults == null) {
+      throw new SphinxException("Failed to connect to Sphinx or error retrieving results from the Sphinx")
     }
 
-    var results: Array[Result] = Array()
-
+    val docIds = queryResults.matches.map { _.docId }
+    var results = new Results
+    results.setKeywords(keywords)
+    results.setFound(queryResults.totalFound)
+    results.setPage(page)
     DB.withConnection { implicit connection =>
-      results = docIds.map { docId =>
+      results.setResults(docIds.map { docId =>
         val result = new Result
 
         result.setId(docId)
@@ -79,7 +114,7 @@ object Searcher extends Controller {
         })
 
         result
-      }
+      })
     }
     results
   }
@@ -88,14 +123,18 @@ object Searcher extends Controller {
     Ok(views.html.index())
   }
 
-  def search(keywords: String, offset: Int, limit: Int, autoload: Boolean) = Action {
-    val results = getResults(keywords, offset, limit)
-    Ok(views.html.search(results, keywords))
+  def search(keywords: String, page: Int) = Action {
+    if (keywords.length == 0) {
+      Ok(views.html.index())
+    } else {
+      val results = getResults(keywords, page)
+      Ok(views.html.search(results))
+    }
   }
 
-  def searchJson(keywords: String, offset: Int, limit: Int) = Action {
+  def searchJson(keywords: String, page: Int) = Action {
     val results = toJson(Map("results" ->
-      getResults(keywords, offset, limit).map { result =>
+      getResults(keywords, page).getResults.map { result =>
         toJson(Map(
           "id" -> toJson(result.getId),
           "header" -> toJson(result.getHeader),

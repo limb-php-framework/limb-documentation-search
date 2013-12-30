@@ -1,22 +1,31 @@
-@(results: Array[controllers.Searcher.Result], keywords: String)
+@(results: controllers.Searcher.Results)
 
 <div class="content">
 @main("Результаты поиска") {
-  @form(keywords)
-  <b>Показано @results.length документов</b>
+  @form(results.getKeywords)
+  <b>Найдено @results.getFound документов</b>
   <br>
   <br>
-  @if(results.length != 0) {
+  @if(results.getFound != 0) {
     <ol>
-    @for(row <- results) {
+    @for(row <- results.getResults) {
      <li> <a target="_blank" href="https://github.com/limb-php-framework/limb/blob/master/@row.getLink">@row.getHeader</a> </li>
      @for(snippet <- row.getSnippets) {
        @Html(snippet)
        <br>
-     }
-     <br><br>
-    }
+       }
+       <br><br>
+       }
     </ol>
+    <br><br>
+    <center>
+    @if(results.getPage > 1) {
+       <a href="/search?s=@(results.getKeywords)&page=@(results.getPage-1)">Назад</a>
+     }
+     @if(results.getPage < results.getPageCount) {
+       <a href="/search?s=@(results.getKeywords)&page=@(results.getPage+1)">Вперёд</a>
+       }
+     </center>
   } else {
     Ничего не найдено
   }

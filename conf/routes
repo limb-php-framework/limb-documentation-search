@@ -1,6 +1,6 @@
 GET     /                    controllers.Searcher.index
-GET     /search              controllers.Searcher.search(s: String ?= "", offset: Int ?= 1, limit: Int ?= 20, autoload: Boolean ?= true)
-GET     /search.json         controllers.Searcher.searchJson(s: String ?= "", offset: Int ?= 1, limit: Int ?= 20)
+GET     /search              controllers.Searcher.search(s: String ?= "", page: Int ?= 1)
+GET     /search.json         controllers.Searcher.searchJson(s: String ?= "", page: Int ?= 1)
 POST     /update              controllers.Indexer.update
 
 # Map static resources from the /public folder to the /assets URL path
