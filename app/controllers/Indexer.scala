@@ -25,12 +25,24 @@ object Indexer extends Controller {
 
   class SphinxElement {
 
-    private var header: String = ""
+    private var header1: Array[String] = Array()
+    private var header2: Array[String] = Array()
+    private var header3: Array[String] = Array()
+    private var header4: Array[String] = Array()
+    private var header5: Array[String] = Array()
+    private var header6: Array[String] = Array()
     private var content: String = ""
     private var url: String = ""
 
-    def getHeader: String = {
-      header
+    def getHeader(level: Int): Array[String] = {
+      level match {
+        case 1 => header1
+        case 2 => header2
+        case 3 => header3
+        case 4 => header4
+        case 5 => header5
+        case 6 => header6
+      }
     }
 
     def getContent: String = {
@@ -41,8 +53,15 @@ object Indexer extends Controller {
       url
     }
 
-    def addHeader(value: String) = {
-      header += " " + value
+    def addHeader(value: String, level: Int) = {
+      level match {
+        case 1 => header1 = header1 :+ value
+        case 2 => header2 = header2 :+ value
+        case 3 => header3 = header3 :+ value
+        case 4 => header4 = header4 :+ value
+        case 5 => header5 = header5 :+ value
+        case 6 => header6 = header6 :+ value
+      }
     }
 
     def addContent(value: String) = {
@@ -131,14 +150,24 @@ object Indexer extends Controller {
   private def saveTree(element: SphinxElement): Unit = {
     DB.withConnection { implicit connection =>
       if (SQL("SELECT url FROM files WHERE url = {url}").on("url" -> element.getURL)().map { _[String]("url") }.mkString.length > 0) {
-        SQL("UPDATE files SET url={url}, header={header}, content={content} WHERE url={url}").on(
+        SQL("UPDATE files SET url={url}, header1={header1}, header2={header2}, header3={header3}, header4={header4}, header5={header5}, header6={header6}, content={content} WHERE url={url}").on(
           "url" -> element.getURL,
-          "header" -> element.getHeader,
+          "header1" -> element.getHeader(1).mkString(" "),
+          "header2" -> element.getHeader(2).mkString(" "),
+          "header3" -> element.getHeader(3).mkString(" "),
+          "header4" -> element.getHeader(4).mkString(" "),
+          "header5" -> element.getHeader(5).mkString(" "),
+          "header6" -> element.getHeader(6).mkString(" "),
           "content" -> element.getContent).executeUpdate()
       } else {
-        SQL("INSERT INTO files (url, header, content) VALUES ({url}, {header}, {content})").on(
+        SQL("INSERT INTO files (url, header1, header2, header3, header4, header5, header6, content) VALUES ({url}, {header1}, {header2}, {header3}, {header4}, {header5}, {header6}, {content})").on(
           "url" -> element.getURL,
-          "header" -> element.getHeader,
+          "header1" -> element.getHeader(1).mkString(" "),
+          "header2" -> element.getHeader(2).mkString(" "),
+          "header3" -> element.getHeader(3).mkString(" "),
+          "header4" -> element.getHeader(4).mkString(" "),
+          "header5" -> element.getHeader(5).mkString(" "),
+          "header6" -> element.getHeader(6).mkString(" "),
           "content" -> element.getContent).execute()
       }
     }
@@ -177,19 +206,13 @@ object Indexer extends Controller {
             nodeList.foreach { node =>
               node match {
                 case _: TextNode => element.addContent(getTextFromTextNode(node))
-                case _: HeaderNode => if (firstHeader) {
-                  element.addHeader(getTextFromHeaderNode(node))
-                  firstHeader = false
-                  getTextFromOtherNodes(node.getChildren)
-                } else {
-                  element.addContent(getTextFromHeaderNode(node))
-                }
+                case _: HeaderNode => element.addHeader(getTextFromHeaderNode(node), node.asInstanceOf[HeaderNode].getLevel)
                 case _ => getTextFromOtherNodes(node.getChildren)
               }
             }
           }
           getTextFromOtherNodes(mdTree.getChildren)
-          if (!element.getHeader.isEmpty || !element.getContent.isEmpty) {
+          if (!(element.getHeader(1).isEmpty || element.getContent.isEmpty)) {
             saveTree(element)
           }
         }

@@ -6,7 +6,7 @@ ALTER USER "limb-docs-searcher" SET search_path = 'limb-docs-searcher';
 
 GRANT USAGE ON SCHEMA "limb-docs-searcher" TO "limb-docs-searcher";
 
-CREATE TABLE files (id SERIAL, url TEXT PRIMARY KEY, header TEXT, content TEXT);
+CREATE TABLE files (id SERIAL, url TEXT PRIMARY KEY, header1 TEXT, header2 TEXT, header3 TEXT, header4 TEXT, header5 TEXT, header6 TEXT, content TEXT);
 
 GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA "limb-docs-searcher" TO "limb-docs-searcher";
 

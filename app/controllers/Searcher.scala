@@ -24,6 +24,13 @@ object Searcher extends Controller {
 
   val sphinx = new SphinxClient
   sphinx.SetServer(root.getString("sphinx_server"), root.getInt("sphinx_port"))
+  sphinx.SetFieldWeights(Map(
+    "header1" -> 1000,
+    "header2" -> 900,
+    "header3" -> 800,
+    "header4" -> 700,
+    "header5" -> 600,
+    "header6" -> 500))
 
   class Result {
     private var id: Long = 0
@@ -81,7 +88,8 @@ object Searcher extends Controller {
 
   private def getResults(keywords: String, page: Int) = {
 
-    sphinx.SetLimits(root.getInt("page_results") * page - root.getInt("page_results"), root.getInt("page_results"))
+    sphinx.SetLimits(root.getInt("page_results") * page - root.getInt("page_results"),
+      root.getInt("page_results"))
     val queryResults = sphinx.Query(keywords, root.getString("index_name"))
 
     if (queryResults == null) {
@@ -98,8 +106,8 @@ object Searcher extends Controller {
         val result = new Result
 
         result.setId(docId)
-        val prepareResult = SQL("SELECT url, header, content FROM files WHERE id = {id}").on("id" -> docId)()
-        result.setHeader(prepareResult.map { _[String]("header") }.mkString)
+        val prepareResult = SQL("SELECT url, header1, content FROM files WHERE id = {id}").on("id" -> docId)()
+        result.setHeader(prepareResult.map { _[String]("header1") }.mkString)
         result.setLink(prepareResult.map { _[String]("url") }.mkString)
 
         val docs = prepareResult.map { content =>
