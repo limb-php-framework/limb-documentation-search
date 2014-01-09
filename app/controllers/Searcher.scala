@@ -23,7 +23,7 @@ import play.Logger
 object Searcher extends Controller {
 
   val sphinx = new SphinxClient
-  sphinx.SetServer(root.getString("sphinxServer"), root.getInt("sphinxPort"))
+  sphinx.SetServer(root.getString("sphinx_server"), root.getInt("sphinx_port"))
 
   class Result {
     private var id: Long = 0
@@ -82,7 +82,7 @@ object Searcher extends Controller {
   private def getResults(keywords: String, page: Int) = {
 
     sphinx.SetLimits(root.getInt("page_results") * page - root.getInt("page_results"), root.getInt("page_results"))
-    val queryResults = sphinx.Query(keywords, root.getString("indexName"))
+    val queryResults = sphinx.Query(keywords, root.getString("index_name"))
 
     if (queryResults == null) {
       throw new SphinxException("Failed to connect to Sphinx or error retrieving results from the Sphinx")
@@ -107,7 +107,7 @@ object Searcher extends Controller {
         }.toArray[String]
 
         result.setSnippets(try {
-          sphinx.BuildExcerpts(docs, root.getString("indexName"), keywords, HashMap[String, Int]("around" -> root.getInt("countSnippets"))).toList
+          sphinx.BuildExcerpts(docs, root.getString("index_name"), keywords, HashMap[String, Int]("around" -> root.getInt("count_snippets"))).toList
 
         } catch {
           case e: SphinxException => List[String]()
