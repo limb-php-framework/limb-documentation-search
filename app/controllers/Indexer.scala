@@ -77,6 +77,11 @@ object Indexer extends Controller {
 
   def shellCommandExecute(args: String*) = args.mkString(" ") #> devNull !
 
+  def shellCommandExecuteGrep(grep: String, args: String*) = {
+    println(args.mkString(" "))
+    args.mkString(" ") #| grep !!
+  }
+
   private def cloningRepository = {
     shellCommandExecute("git clone", root.getString("limb_git_path"), root.getString("limb_local_path"))
   }
@@ -109,6 +114,23 @@ object Indexer extends Controller {
     }
   }
 
+  private def mdFilesFilter(limbDirectory: File, prepareFiles: Array[String]): List[File] = {
+    prepareFiles.map { path =>
+      new File(Seq(limbDirectory.getAbsolutePath, path).mkString("/"))
+    }.filter { file =>
+      "md" == FilenameUtils.getExtension(file.getAbsolutePath) && file.exists
+    }.toList
+  }
+
+  private def removeDeletedMdFiles(limbDirectory: File, date: Date) {
+    val files = shellCommandExecuteGrep("grep md", "git --git-dir=" + limbDirectory.getAbsolutePath + """/.git""", "log", """--since="""" + getDateForGit(date) + "\"", "--name-only", "--pretty=format:", "--diff-filter=D")
+    DB.withConnection { implicit connection =>
+      for(url <- mdFilesFilter(limbDirectory, files.split("\n"))) {
+        SQL("DELETE FROM files WHERE url={url}").on("url" -> getFileURL(url)).execute()
+      }
+    }
+  }
+
   // encapsulation incomprehensible moment, because of which it is necessary to do asInstanceOf byd method getText
   private def getTextFromTextNode(node: Node): String = {
     node.asInstanceOf[TextNode].getText
@@ -122,14 +144,18 @@ object Indexer extends Controller {
     }.filter { _.getClass == classOf[String] }.mkString(" ")
   }
 
-  private def getMdFiles(limbDirectory: File, date: Date): List[File] = {
+  private def getDateForGit(date: Date) = {
     val dateFormat = new SimpleDateFormat("MMMhh:mm:ss'MSK'y-HH:mm:ss")
-    val cmd = Seq("git --git-dir=", limbDirectory.getAbsolutePath, """/.git log --since="""" + dateFormat.format(date) + "\" --name-only --pretty=format:").mkString
-    val grep = "grep md"
-    val prepareFiles: java.lang.String = try { (cmd #| grep !!) } catch { case e: java.lang.RuntimeException => return List[File]() }
-    prepareFiles.split("\n").map { path =>
-      new File(Seq(limbDirectory.getAbsolutePath, path).mkString("/"))
-    }.filter { file => "md" == FilenameUtils.getExtension(file.getAbsolutePath) && file.exists }.toList
+    dateFormat.format(date)
+  }
+
+  private def getMdFiles(limbDirectory: File, date: Date): List[File] = {
+    val prepareFiles = try {
+      shellCommandExecuteGrep("grep md", "git --git-dir=" + limbDirectory.getAbsolutePath + """/.git log --since="""" + getDateForGit(date) + "\" --name-only --pretty=format:")
+    } catch {
+      case e: java.lang.RuntimeException => return List[File]()
+    }
+    mdFilesFilter(limbDirectory, prepareFiles.split("\n"))
   }
 
   private def getUpdatedDate = {
@@ -194,6 +220,7 @@ object Indexer extends Controller {
         initRepository
         val limbDirectory = new File(root.getString("limb_local_path"))
         var updatedDate = getUpdatedDate
+        removeDeletedMdFiles(limbDirectory, updatedDate)
         Logger("application").info("Complete database started")
         getMdFiles(limbDirectory, updatedDate).foreach { file =>
           Logger("application").debug("Handling " + file.getAbsolutePath)
@@ -201,7 +228,6 @@ object Indexer extends Controller {
           val element = new SphinxElement
           val fileURL = getFileURL(file)
           element.setURL(fileURL)
-          var firstHeader = true
           def getTextFromOtherNodes(nodeList: java.util.List[Node]): Unit = {
             nodeList.foreach { node =>
               node match {
