@@ -78,7 +78,6 @@ object Indexer extends Controller {
   def shellCommandExecute(args: String*) = args.mkString(" ") #> devNull !
 
   def shellCommandExecuteGrep(grep: String, args: String*) = {
-    println(args.mkString(" "))
     args.mkString(" ") #| grep !!
   }
 
