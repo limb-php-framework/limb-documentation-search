@@ -1,0 +1,8 @@
+@(buildTime: String, version: String, dbConn: String, sphinxConn: String)
+
+<package_info>
+    <project buildtime="@buildTime" version="@version" name="limb-docs-searcher">
+        <db-conn>@dbConn</db-conn>
+        <sphinx-conn>@sphinxConn</sphinx-conn>
+    </project>
+</package_info>

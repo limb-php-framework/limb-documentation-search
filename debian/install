@@ -3,3 +3,4 @@ conf/application.conf /etc/limb-docs-searcher/
 conf/logger.xml /etc/limb-docs-searcher/
 target/scala-2.10/searcher.jar /usr/share/limb-docs-searcher/
 conf/sphinx.conf /etc/limb-docs-searcher
+datebuild /var/lib/limb-docs-searcher/

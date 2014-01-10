@@ -2,6 +2,7 @@ GET     /                    controllers.Searcher.index
 GET     /search              controllers.Searcher.search(s: String ?= "", page: Int ?= 1)
 GET     /search.json         controllers.Searcher.searchJson(s: String ?= "", page: Int ?= 1)
 POST     /update              controllers.Indexer.update
+GET     /status              controllers.Searcher.status
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file        controllers.Assets.at(path="/public", file)

@@ -19,6 +19,7 @@ import play.api.libs.json.Json.toJson
 import org.sphx.api.SphinxException
 import play.Configuration.root
 import play.Logger
+import sys.process._
 
 object Searcher extends Controller {
 
@@ -150,5 +151,40 @@ object Searcher extends Controller {
           "link" -> toJson(result.getLink)))
       }.toList))
     Ok(toJson(results))
+  }
+
+  private def getDebDateBuild = {
+    scala.io.Source.fromFile("/var/lib/limb-docs-searcher/datebuild").
+      mkString.
+      replaceAll("""(?m)\s+$""", "") // strip
+  }
+
+  private def getDebVersion = {
+    ("apt-cache policy limb-docs-searcher" #| "head -n 2" #| "tail -n 1" !!).
+      split(" ")(3).replaceAll("""(?m)\s+$""", "")
+  }
+
+  private def getSphinxStatus = {
+    sphinx.Open
+    sphinx.Close
+    if (sphinx.IsConnectError) { "failed" } else { "success" }
+  }
+
+  private def getDBStatus = {
+    var dbConn: String = "success"
+
+    try {
+      DB.withConnection { implicit connection =>
+        SQL("SELECT 1")()
+      }
+    } catch {
+      case e: Exception => dbConn = "failed"
+    }
+
+    dbConn
+  }
+
+  def status = Action {
+    Ok(views.xml.status(getDebDateBuild, getDebVersion, getDBStatus, getSphinxStatus))
   }
 }
