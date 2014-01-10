@@ -18,7 +18,6 @@ import java.lang.NullPointerException
 import play.api.libs.json.Json.toJson
 import org.sphx.api.SphinxException
 import play.Configuration.root
-import play.Logger
 import sys.process._
 
 object Searcher extends Controller {
@@ -167,7 +166,9 @@ object Searcher extends Controller {
   private def getSphinxStatus = {
     sphinx.Open
     sphinx.Close
-    if (sphinx.IsConnectError) { "failed" } else { "success" }
+    if (sphinx.IsConnectError) {
+      Logger ("application").error("Failed to connect to Sphinx")
+      "failed" } else { "success" }
   }
 
   private def getDBStatus = {
