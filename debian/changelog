@@ -1,3 +1,14 @@
+limb-docs-searcher (1.0.1) precise; urgency=low
+
+  * removal of bases deleted files
+  *  added the ability to overwrite the settings in the config file
+     conf/application.development.conf
+  * page /status
+  * paggination
+
+ -- Andrey Rezcov <rsa199@ya.ru>  Fri, 10 Jan 2014 14:38:01 +0400
+
+
 limb-docs-searcher (1.0.0) precise; urgency=low
 
   * First release
