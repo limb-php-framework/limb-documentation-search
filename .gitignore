@@ -25,5 +25,5 @@ debian/limb-docs-searcher/
 debian/limb-docs-searcher-static.debhelper.log
 debian/limb-docs-searcher-static.substvars
 debian/limb-docs-searcher-static/
-
+conf/application.development.conf
 datebuild
