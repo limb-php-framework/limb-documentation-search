@@ -133,7 +133,6 @@ object Indexer extends Controller {
     val files = shellCommandExecuteGrep("grep md", "git --git-dir=" + limbDirectory.getAbsolutePath + """/.git""", "log", """--since="""" + getDateForGit(date) + "\"", "--name-only", "--pretty=format:", "--diff-filter=D")
     DB.withConnection { implicit connection =>
       for(url <- mdFilesFilterDeleted(limbDirectory, files.split("\n"))) {
-        println(url)
         SQL("DELETE FROM files WHERE url={url}").on("url" -> getFileURL(url)).execute()
       }
     }
