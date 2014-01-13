@@ -167,8 +167,9 @@ object Searcher extends Controller {
     sphinx.Open
     sphinx.Close
     if (sphinx.IsConnectError) {
-      Logger ("application").error("Failed to connect to Sphinx")
-      "failed" } else { "success" }
+      Logger("application").error("Failed to connect to Sphinx")
+      "failed"
+    } else { "success" }
   }
 
   private def getDBStatus = {
