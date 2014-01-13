@@ -1,3 +1,10 @@
+limb-docs-searcher (1.0.2) precise; urgency=low
+
+  * Made normal distribution statics
+
+ -- Andrey Rezcov <rsa199@ya.ru>  Fri, 13 Dec 2013 11:16:01 +0400
+
+
 limb-docs-searcher (1.0.1) precise; urgency=low
 
   * removal of bases deleted files
