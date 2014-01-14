@@ -1,0 +1,8 @@
+/var/log/limb-docs-searcher/*log {
+        daily
+        rotate 12
+        compress
+        delaycompress
+        missingok
+        notifempty
+}
