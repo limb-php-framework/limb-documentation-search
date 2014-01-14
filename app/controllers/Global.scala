@@ -16,7 +16,7 @@ object Global extends GlobalSettings {
   }
 
   override def onError(request: RequestHeader, ex: Throwable) = {
-    Future.successful(InternalServerError("Unknown error"))
+    Future.successful(InternalServerError("Internal error"))
   }
 
   override def onHandlerNotFound(request: RequestHeader) = {
