@@ -28,7 +28,7 @@ object Global extends GlobalSettings {
   }
 
   override def onLoadConfig(config: Configuration, path: File, classloader: ClassLoader, mode: Mode.Mode): Configuration = {
-    val modeSpecificConfig = config ++ Configuration(ConfigFactory.load("application.development.conf"))
+    val modeSpecificConfig = config ++ Configuration(ConfigFactory.load("application.dev.conf"))
     Logger.debug("config loaded")
     super.onLoadConfig(modeSpecificConfig, path, classloader, mode)
 
