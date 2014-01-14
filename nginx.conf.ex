@@ -3,10 +3,11 @@ upstream limbdocssearcher {
 }
 
 server {
+       server_name limb-docs-searcher.dev;
        listen 80;
 
-       access_log /var/log/limb-docs-searcher/nginx.access.log;
-       error_log  /var/log/limb-docs-searcher/nginx.error.log;
+       access_log /var/log/limb-docs-searcher/limb-docs-searcher.access.log;
+       error_log  /var/log/limb-docs-searcher/limb-docs-searcher.error.log;
 
        proxy_buffering    off;
 
