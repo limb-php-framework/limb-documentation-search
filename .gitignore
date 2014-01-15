@@ -27,3 +27,4 @@ debian/limb-docs-searcher-static.substvars
 debian/limb-docs-searcher-static/
 conf/application.development.conf
 datebuild
+limb-docs-searcher.log
