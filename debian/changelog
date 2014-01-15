@@ -1,3 +1,21 @@
+limb-docs-searcher (1.0.3) precise; urgency=low
+
+  * HH-102 Modification exception handling logic
+    HH-73 deleted artifact that handles getting snippets of the Sphinx
+    HH-102 replaced by Exception java.sql.Exception
+    HH-102 update application.conf (added db.default.acquireRetryDelay for to set the time after which the connection attempt will be next
+    HH-73 update .gitignore (added development log)
+    HH-102 made a script that launches the application in development mode with development logger file
+    HH-73 update readme due to features
+    HH-83 nginx example config minor fixes
+    HH-73 added development example config
+    HH-73 change name development config
+    HH-73 change error message
+    HH-102 update logger config
+
+ -- Andrey Rezcov <rsa199@ya.ru>  Wed, 15 Jan 2014 16:14:32 +0400
+
+
 limb-docs-searcher (1.0.2) precise; urgency=low
 
   * Made normal distribution statics
