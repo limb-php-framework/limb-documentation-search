@@ -115,12 +115,7 @@ object Searcher extends Controller {
           escapeHtml4(content[String]("content"))
         }.toArray[String]
 
-        result.setSnippets(try {
-          sphinx.BuildExcerpts(docs, root.getString("index_name"), keywords, HashMap[String, Int]("around" -> root.getInt("count_snippets"))).toList
-
-        } catch {
-          case e: SphinxException => List[String]()
-        })
+        result.setSnippets(sphinx.BuildExcerpts(docs, root.getString("index_name"), keywords, HashMap[String, Int]("around" -> root.getInt("count_snippets"))).toList)
 
         result
       })
