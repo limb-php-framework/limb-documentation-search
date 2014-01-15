@@ -87,14 +87,15 @@ object Searcher extends Controller {
     }
   }
 
-  private def getResults(keywords: String, page: Int) = {
+  private def getResults(keywords: String, page: Int): Results = {
 
     sphinx.SetLimits(root.getInt("page_results") * page - root.getInt("page_results"),
       root.getInt("page_results"))
     val queryResults = sphinx.Query(keywords, root.getString("index_name"))
 
     if (queryResults == null) {
-      throw new SphinxException("Failed to connect to Sphinx or error retrieving results from the Sphinx")
+      Logger("application").error("Failed to connect to Sphinx or error retrieving results from the Sphinx")
+      return null
     }
 
     val docIds = queryResults.matches.map { _.docId }
@@ -102,23 +103,28 @@ object Searcher extends Controller {
     results.setKeywords(keywords)
     results.setFound(queryResults.totalFound)
     results.setPage(page)
-    DB.withConnection { implicit connection =>
-      results.setResults(docIds.map { docId =>
-        val result = new Result
+    try {
+      DB.withConnection { implicit connection =>
+        results.setResults(docIds.map { docId =>
+          val result = new Result
 
-        result.setId(docId)
-        val prepareResult = SQL("SELECT url, header1, content FROM files WHERE id = {id}").on("id" -> docId)()
-        result.setHeader(prepareResult.map { _[String]("header1") }.mkString)
-        result.setLink(prepareResult.map { _[String]("url") }.mkString)
+          result.setId(docId)
+          val prepareResult = SQL("SELECT url, header1, content FROM files WHERE id = {id}").on("id" -> docId)()
+          result.setHeader(prepareResult.map { _[String]("header1") }.mkString)
+          result.setLink(prepareResult.map { _[String]("url") }.mkString)
 
-        val docs = prepareResult.map { content =>
-          escapeHtml4(content[String]("content"))
-        }.toArray[String]
+          val docs = prepareResult.map { content =>
+            escapeHtml4(content[String]("content"))
+          }.toArray[String]
 
-        result.setSnippets(sphinx.BuildExcerpts(docs, root.getString("index_name"), keywords, HashMap[String, Int]("around" -> root.getInt("count_snippets"))).toList)
+          result.setSnippets(sphinx.BuildExcerpts(docs, root.getString("index_name"), keywords, HashMap[String, Int]("around" -> root.getInt("count_snippets"))).toList)
 
-        result
-      })
+          result
+        })
+      }
+    } catch {
+      case e: SQLException => Logger("application").error(e.getMessage)
+        return null
     }
     results
   }
@@ -132,20 +138,29 @@ object Searcher extends Controller {
       Ok(views.html.index())
     } else {
       val results = getResults(keywords, page)
-      Ok(views.html.search(results))
+      if (results == null) {
+        InternalServerError("Internal error")
+      } else {
+        Ok(views.html.search(results))
+      }
     }
   }
 
   def searchJson(keywords: String, page: Int) = Action {
-    val results = toJson(Map("results" ->
-      getResults(keywords, page).getResults.map { result =>
-        toJson(Map(
-          "id" -> toJson(result.getId),
-          "header" -> toJson(result.getHeader),
-          "snippets" -> toJson(result.getSnippets),
-          "link" -> toJson(result.getLink)))
-      }.toList))
-    Ok(toJson(results))
+    val prepareResults = getResults(keywords, page)
+    if (prepareResults == null) {
+      InternalServerError("Internal error блеать")
+    } else {
+      val results = Map("results" ->
+        prepareResults.getResults.map { result =>
+          toJson(Map(
+            "id" -> toJson(result.getId),
+            "header" -> toJson(result.getHeader),
+            "snippets" -> toJson(result.getSnippets),
+            "link" -> toJson(result.getLink)))
+        }.toList)
+      Ok(toJson(results))
+    }
   }
 
   private def getDebDateBuild = {
