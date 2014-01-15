@@ -19,6 +19,7 @@ import play.api.libs.json.Json.toJson
 import org.sphx.api.SphinxException
 import play.Configuration.root
 import sys.process._
+import java.sql.SQLException
 
 object Searcher extends Controller {
 
@@ -180,7 +181,7 @@ object Searcher extends Controller {
         SQL("SELECT 1")()
       }
     } catch {
-      case e: Exception => dbConn = "failed"
+      case e: java.sql.SQLException => dbConn = "failed"
     }
 
     dbConn
