@@ -20,7 +20,7 @@ object Global extends GlobalSettings {
   }
 
   override def onHandlerNotFound(request: RequestHeader) = {
-    Future.successful(NotFound("Not found"))
+    Future.successful(NotFound(views.html.notfound()))
   }
 
   override def onBadRequest(request: RequestHeader, error: String) = {
