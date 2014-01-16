@@ -16,11 +16,11 @@ object Global extends GlobalSettings {
   }
 
   override def onError(request: RequestHeader, ex: Throwable) = {
-    Future.successful(InternalServerError(views.html.internalerror()))
+    Future.successful(InternalServerError(views.html.internalError()))
   }
 
   override def onHandlerNotFound(request: RequestHeader) = {
-    Future.successful(NotFound(views.html.notfound()))
+    Future.successful(NotFound(views.html.notFound()))
   }
 
   override def onBadRequest(request: RequestHeader, error: String) = {

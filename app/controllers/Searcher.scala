@@ -139,7 +139,7 @@ object Searcher extends Controller {
     } else {
       val results = getResults(keywords, page)
       if (results == null) {
-        InternalServerError(views.html.internalerror())
+        InternalServerError(views.html.internalError())
       } else {
         Ok(views.html.search(results))
       }
@@ -149,7 +149,7 @@ object Searcher extends Controller {
   def searchJson(keywords: String, page: Int) = Action {
     val prepareResults = getResults(keywords, page)
     if (prepareResults == null) {
-      InternalServerError(views.html.internalerror())
+      InternalServerError(views.html.internalError())
     } else {
       val results = Map("results" ->
         prepareResults.getResults.map { result =>
