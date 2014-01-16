@@ -123,7 +123,7 @@ object Searcher extends Controller {
         })
       }
     } catch {
-      case e: SQLException => Logger("application").error(e.getMessage)
+      case e: SQLException => Logger("application").error("Failed to retrieve data from the database")
         return null
     }
     results
