@@ -195,3 +195,5 @@ Appender - блок, который позволяет настраивать к
 * index_name - название индекса Sphinx
 * count_snippets - количество слов кокруг ключевого в описании
 * static_url - адрес для статики
+* dbplugin=disabled нужно для отключения стандартного DBPlugim
+* evolutionplugin=disabled для отключения Evolution
