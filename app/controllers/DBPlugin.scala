@@ -12,7 +12,7 @@ import scala.util.control.{ NonFatal, ControlThrowable }
 
 //
 
-class BoneCPPlugin(app: Application) extends DBPlugin {
+class BoneCPPluginCustom(app: Application) extends DBPlugin {
 
   private def error = throw new Exception("db keys are missing from application.conf")
 
@@ -31,12 +31,12 @@ class BoneCPPlugin(app: Application) extends DBPlugin {
    * plugin is disabled if either configuration is missing or the plugin is explicitly disabled
    */
   private lazy val isDisabled = {
-    app.configuration.getString("dbplugin").filter(_ == "disabled").isDefined || dbConfig.subKeys.isEmpty
+    app.configuration.getString("dbplugincustom").filter(_ == "disabled").isDefined || dbConfig.subKeys.isEmpty
   }
 
   /**
    * Is this plugin enabled.
-   *
+
    * {{{
    * dbplugin=disabled
    * }}}
@@ -46,7 +46,7 @@ class BoneCPPlugin(app: Application) extends DBPlugin {
   /**
    * Retrieves the underlying `DBApi` managing the data sources.
    */
-  def api: DBApi = dbApi
+  override def api: DBApi = dbApi
 
   /**
    * Reads the configuration and connects to every data source.
