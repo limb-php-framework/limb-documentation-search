@@ -158,7 +158,7 @@ Appender - блок, который позволяет настраивать к
     </evaluator>
 </filter>
 ```
-Подробно о фильрах http://logback.qos.ch/manual/filters.html
+Подробно о фильтрах http://logback.qos.ch/manual/filters.html
 
 Непосредственно связать logger с appender можно так:
 ```xml
