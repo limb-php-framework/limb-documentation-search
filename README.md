@@ -50,6 +50,7 @@ Limb docs searcher
 
    * sbt (http://repo.scala-sbt.org/scalasbt/sbt-native-packages/org/scala-sbt/sbt/0.13.0/sbt.deb)
    * default-jdk
+   * dh-make
 3. Подготовить базу данных, применить инициализационный скрипт
    `init/bootstrap.sql`
 4. Собрать deb-пакет
