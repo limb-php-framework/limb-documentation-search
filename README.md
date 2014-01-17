@@ -47,7 +47,8 @@ Limb docs searcher
 
 1. В репозитории текущий работающий релиз лежит в ветке `master`
 2. Перед сборкой пакета нужно установить все сборочные зависимости приложения:
-   * sbt
+
+   * sbt (http://repo.scala-sbt.org/scalasbt/sbt-native-packages/org/scala-sbt/sbt/0.13.0/sbt.deb)
    * default-jdk
 3. Подготовить базу данных, применить инициализационный скрипт
    `init/bootstrap.sql`
