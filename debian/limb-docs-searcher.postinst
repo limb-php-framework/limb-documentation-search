@@ -14,4 +14,6 @@ chown $USER:$GROUP /var/log/limb-docs-searcher/ -R
 
 rm "/var/lib/limb-docs-searcher/updates" 2> /dev/null
 
+mkdir /var/lib/sphinxsearch/ -p
+
 exit 0
