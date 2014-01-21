@@ -31,7 +31,7 @@ Limb docs searcher
 
     ```bash
     wget http://repo.scala-sbt.org/scalasbt/sbt-native-packages/org/scala-sbt/sbt/0.13.0/sbt.deb
-    dpkg -i sbt.deb
+    gdebi sbt.deb
     ```
 
 3. Накатываем на базу иницилазационный скрипт из папки `init` `bootstrap.sql`
