@@ -26,7 +26,7 @@ Limb docs searcher
 
 1. Получаем основной репозиторий проекта
 
-    ``git clone git@gitlab.eastwoodlab.ru:limb-docs-searcher.git``
+    ``git clone https://github.com/knevcher/limb-documentation-search.git``
 2. Устанавливаем sbt
 
     ```bash
