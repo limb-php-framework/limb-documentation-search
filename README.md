@@ -66,14 +66,20 @@ Limb docs searcher
    `gdebi ../limb-docs-searcher-static_<версия>_all.deb`
 7. Настройки приложения находятся в файле `/etc/limb-docs-searcher/application.conf`
 8. Настроить подключение к базе данных (параметры db.default.*)
-9. Демон сфинкса необходимо запускать после того, как приложение проиндексирует limb репозиторий, в противном случае он просто не запустится по причине отсутствия индексных файлов.
+9. Запускаем приложение
+
+   `sudo start limb-docs-searcher`
+
+10. Запускаем индексацию
+
+   ``` $ curl --data "token=`cat /etc/limb-docs-searcher/application.conf|grep token|awk '{print $3}'|sed 's/"//g'`" http://localhost:`cat /etc/default/limb-docs-searcher|grep PORT|sed 's/PORT=//g'`/update -X POST```
+11. Демон сфинкса необходимо запускать после того, как приложение проиндексирует limb репозиторий, в противном случае он просто не запустится по причине отсутствия индексных файлов.
    Запустить searchd (демон сфинкса) (не забываем отредактировать его, параметры БД поменять например)
 
    `searchd -c /etc/limb-docs-searcher/sphinx.conf`
 
-    Если хотите сразу же заполнить базу и сфинкс данными - посмотрите на пункт "Индексация ручками" в "Дополнительно".
     После изменения конфига /etc/limb-docs-searcher/sphinx.conf необходимо перезапускать searchd.
-10. Настроить nginx для раздачи статики (конфиг nginx-static.conf.ex прилагается)
+12. Настроить nginx для раздачи статики (конфиг nginx-static.conf.ex прилагается)
 
 **Управление сервером**
 
