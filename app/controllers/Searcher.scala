@@ -123,7 +123,9 @@ object Searcher extends Controller {
             }
           }
         }
-        results.setResults(SQL("SELECT id, url, header1, content FROM files WHERE id in ( " + docIds.mkString(", ") + " );").as(ViewResult.parser *).toArray)
+        if (docIds.length > 0) {
+          results.setResults(SQL("SELECT id, url, header1, content FROM files WHERE id in ( " + docIds.mkString(", ") + " );").as(ViewResult.parser *).toArray)
+        }
 
       }
     } catch {
