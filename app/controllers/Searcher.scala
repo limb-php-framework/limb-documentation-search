@@ -1,6 +1,7 @@
 package controllers
 
 import anorm._
+import anorm.SqlParser.get
 import play.api.Play.current
 import play.api.db._
 import play.api._
@@ -105,22 +106,25 @@ object Searcher extends Controller {
     results.setPage(page)
     try {
       DB.withConnection { implicit connection =>
-        results.setResults(docIds.map { docId =>
-          val result = new Result
 
-          result.setId(docId)
-          val prepareResult = SQL("SELECT url, header1, content FROM files WHERE id = {id}").on("id" -> docId)()
-          result.setHeader(prepareResult.map { _[String]("header1") }.mkString)
-          result.setLink(prepareResult.map { _[String]("url") }.mkString)
+        object ViewResult {
+          val parser = {
+            get[Long]("id") ~
+            get[String]("url") ~
+            get[String]("header1") ~
+            get[String]("content") map {
+              case id ~ url ~ header1 ~ content => val result = new Result
+                val docs = escapeHtml4(content)
+                result.setId(id)
+                result.setHeader(header1)
+                result.setSnippets(sphinx.BuildExcerpts(Array(docs), root.getString("index_name"), keywords, HashMap[String, Int]("around" -> root.getInt("count_snippets"))).toList)
+                result.setLink(url)
+                result
+            }
+          }
+        }
+        results.setResults(SQL("SELECT id, url, header1, content FROM files WHERE id in ( " + docIds.mkString(", ") + " );").as(ViewResult.parser *).toArray)
 
-          val docs = prepareResult.map { content =>
-            escapeHtml4(content[String]("content"))
-          }.toArray[String]
-
-          result.setSnippets(sphinx.BuildExcerpts(docs, root.getString("index_name"), keywords, HashMap[String, Int]("around" -> root.getInt("count_snippets"))).toList)
-
-          result
-        })
       }
     } catch {
       case e: SQLException => Logger("application").error("Failed to retrieve data from the database")
