@@ -17,7 +17,6 @@ import scala.collection.mutable.HashMap
 import org.apache.commons.lang3.StringEscapeUtils.escapeHtml4
 import java.lang.NullPointerException
 import play.api.libs.json.Json.toJson
-import org.sphx.api.SphinxException
 import play.Configuration.root
 import sys.process._
 import java.sql.SQLException
