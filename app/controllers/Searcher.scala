@@ -20,18 +20,19 @@ import play.api.libs.json.Json.toJson
 import play.Configuration.root
 import sys.process._
 import java.sql.SQLException
+import akka.actor.Props
+import akka.actor._
+import akka.pattern.ask
+import akka.util.Timeout
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+import scala.concurrent.Await
 
 object Searcher extends Controller {
 
-  val sphinx = new SphinxClient
-  sphinx.SetServer(root.getString("sphinx_server"), root.getInt("sphinx_port"))
-  sphinx.SetFieldWeights(Map(
-    "header1" -> 1000,
-    "header2" -> 900,
-    "header3" -> 800,
-    "header4" -> 700,
-    "header5" -> 600,
-    "header6" -> 500))
+  val actorSystem = ActorSystem("hello-world")
+  val queryActor = actorSystem.actorOf(Props[RecipientResultsFromSphinx])
+  implicit val timeout = Timeout(1000)
 
   class Result {
     private var id: Long = 0
@@ -89,9 +90,9 @@ object Searcher extends Controller {
 
   private def getResults(keywords: String, page: Int): Results = {
 
-    sphinx.SetLimits(root.getInt("page_results") * page - root.getInt("page_results"),
-      root.getInt("page_results"))
-    val queryResults = sphinx.Query(keywords, root.getString("index_name"))
+    val queryResults = (Await.result(queryActor ? keywords, Duration(1000, MILLISECONDS))).asInstanceOf[org.sphx.api.SphinxResult]
+
+    queryActor ! page
 
     if (queryResults == null) {
       Logger("application").error("Failed to connect to Sphinx or error retrieving results from the Sphinx")
@@ -116,7 +117,11 @@ object Searcher extends Controller {
                 val docs = escapeHtml4(content)
                 result.setId(id)
                 result.setHeader(header1)
-                result.setSnippets(sphinx.BuildExcerpts(Array(docs), root.getString("index_name"), keywords, HashMap[String, Int]("around" -> root.getInt("count_snippets"))).toList)
+                val pageElement = new PageElement
+                pageElement.docs = Array(docs)
+                pageElement.keywords = keywords
+                val snippets =  (Await.result(queryActor ? pageElement, Duration.Inf)).asInstanceOf[List[String]]
+                result.setSnippets(snippets)
                 result.setLink(url)
                 result
             }
@@ -180,12 +185,15 @@ object Searcher extends Controller {
   }
 
   private def getSphinxStatus = {
-    sphinx.Open
-    sphinx.Close
-    if (sphinx.IsConnectError) {
+
+    val status = (Await.result((queryActor ? "sphinxStatus"), Duration.Inf)).asInstanceOf[Boolean]
+
+    if (status) {
+      "success"
+    } else {
       Logger("application").error("Failed to connect to Sphinx")
       "failed"
-    } else { "success" }
+    }
   }
 
   private def getDBStatus = {
