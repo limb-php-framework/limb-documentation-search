@@ -27,12 +27,15 @@ import akka.util.Timeout
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.Await
+import akka.routing.FromConfig
+import play.api.libs.concurrent._
 
 object Searcher extends Controller {
 
-  val actorSystem = ActorSystem("hello-world")
-  val queryActor = actorSystem.actorOf(Props[RecipientResultsFromSphinx])
-  implicit val timeout = Timeout(1000)
+  val actorSystem = ActorSystem("system")
+  implicit val timeout = Timeout(root.getMilliseconds("future_timeout"))
+
+  val sphinx = actorSystem.actorOf(Props[RecipientResultsFromSphinx].withRouter(FromConfig()), "sphinx-router")
 
   class Result {
     private var id: Long = 0
@@ -90,9 +93,9 @@ object Searcher extends Controller {
 
   private def getResults(keywords: String, page: Int): Results = {
 
-    val queryResults = (Await.result(queryActor ? keywords, Duration(1000, MILLISECONDS))).asInstanceOf[org.sphx.api.SphinxResult]
+    val queryResults = (Await.result(sphinx ? keywords, Duration.Inf)).asInstanceOf[org.sphx.api.SphinxResult]
 
-    queryActor ! page
+    sphinx ! page
 
     if (queryResults == null) {
       Logger("application").error("Failed to connect to Sphinx or error retrieving results from the Sphinx")
@@ -120,7 +123,7 @@ object Searcher extends Controller {
                 val pageElement = new PageElement
                 pageElement.docs = Array(docs)
                 pageElement.keywords = keywords
-                val snippets =  (Await.result(queryActor ? pageElement, Duration.Inf)).asInstanceOf[List[String]]
+                val snippets = (Await.result(sphinx ? pageElement, Duration.Inf)).asInstanceOf[List[String]]
                 result.setSnippets(snippets)
                 result.setLink(url)
                 result
@@ -144,32 +147,46 @@ object Searcher extends Controller {
   }
 
   def search(keywords: String, page: Int) = Action {
-    if (keywords.length == 0) {
-      Ok(views.html.index())
-    } else {
-      val results = getResults(keywords, page)
-      if (results == null) {
-        InternalServerError(views.html.internalError())
+    Async {
+      if (keywords.length == 0) {
+        Akka.future {
+          Ok( views.html.index())
+        }
       } else {
-        Ok(views.html.search(results))
+        val results =  getResults(keywords, page)
+        if (results == null) {
+          Akka.future {
+            InternalServerError(views.html.internalError())
+          }
+        } else {
+          Akka.future {
+            Ok(views.html.search(results))
+          }
+        }
       }
     }
   }
 
   def searchJson(keywords: String, page: Int) = Action {
-    val prepareResults = getResults(keywords, page)
-    if (prepareResults == null) {
-      InternalServerError(views.html.internalError())
-    } else {
-      val results = Map("results" ->
-        prepareResults.getResults.map { result =>
-          toJson(Map(
-            "id" -> toJson(result.getId),
-            "header" -> toJson(result.getHeader),
-            "snippets" -> toJson(result.getSnippets),
-            "link" -> toJson(result.getLink)))
-        }.toList)
-      Ok(toJson(results))
+    Async {
+      val prepareResults = getResults(keywords, page)
+      if (prepareResults == null) {
+        Akka.future {
+          InternalServerError(views.html.internalError())
+        }
+      } else {
+        val results = Map("results" ->
+          prepareResults.getResults.map { result =>
+            toJson(Map(
+              "id" -> toJson(result.getId),
+              "header" -> toJson(result.getHeader),
+              "snippets" -> toJson(result.getSnippets),
+              "link" -> toJson(result.getLink)))
+          }.toList)
+        Akka.future {
+          Ok(toJson(results))
+        }
+      }
     }
   }
 
@@ -186,7 +203,7 @@ object Searcher extends Controller {
 
   private def getSphinxStatus = {
 
-    val status = (Await.result((queryActor ? "sphinxStatus"), Duration.Inf)).asInstanceOf[Boolean]
+    val status = (Await.result((sphinx ? "sphinxStatus"), Duration.Inf)).asInstanceOf[Boolean]
 
     if (status) {
       "success"
