@@ -14,3 +14,7 @@ script
     fi
     exec /usr/bin/limb-docs-searcher -Dpidfile.path=$PID -Dhttp.port=$PORT -Dconfig.file=$CONFIG -Dlogger.file=$LOGGER_FILE
 end script
+
+post-stop script
+    rm $PID
+end script
