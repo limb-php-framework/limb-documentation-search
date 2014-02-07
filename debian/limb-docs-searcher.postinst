@@ -9,7 +9,6 @@ if [ $? -ne 0 ]; then
 fi
 
 chown $USER:$GROUP /var/lib/limb-docs-searcher/ -R
-chown $USER:$GROUP /var/run/limb-docs-searcher/ -R
 chown $USER:$GROUP /var/log/limb-docs-searcher/ -R
 
 rm "/var/lib/limb-docs-searcher/updates" 2> /dev/null
