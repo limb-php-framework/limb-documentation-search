@@ -29,6 +29,8 @@ import scala.concurrent.duration._
 import scala.concurrent.Await
 import akka.routing.FromConfig
 import play.api.libs.concurrent._
+import scala.concurrent.Future
+
 
 object Searcher extends Controller {
 
@@ -146,46 +148,42 @@ object Searcher extends Controller {
     Ok(views.html.index())
   }
 
-  def search(keywords: String, page: Int) = Action {
-    Async {
-      if (keywords.length == 0) {
-        Akka.future {
-          Ok( views.html.index())
+  def search(keywords: String, page: Int) = Action.async {
+    if (keywords.length == 0) {
+      Future {
+        Ok( views.html.index())
+      }
+    } else {
+      val results =  getResults(keywords, page)
+      if (results == null) {
+        Future {
+          InternalServerError(views.html.internalError())
         }
       } else {
-        val results =  getResults(keywords, page)
-        if (results == null) {
-          Akka.future {
-            InternalServerError(views.html.internalError())
-          }
-        } else {
-          Akka.future {
-            Ok(views.html.search(results))
-          }
+        Future {
+          Ok(views.html.search(results))
         }
       }
     }
   }
 
-  def searchJson(keywords: String, page: Int) = Action {
-    Async {
-      val prepareResults = getResults(keywords, page)
-      if (prepareResults == null) {
-        Akka.future {
-          InternalServerError(views.html.internalError())
-        }
-      } else {
-        val results = Map("results" ->
-          prepareResults.getResults.map { result =>
-            toJson(Map(
-              "id" -> toJson(result.getId),
-              "header" -> toJson(result.getHeader),
-              "snippets" -> toJson(result.getSnippets),
-              "link" -> toJson(result.getLink)))
-          }.toList)
-        Akka.future {
-          Ok(toJson(results))
-        }
+  def searchJson(keywords: String, page: Int) = Action.async {
+    val prepareResults = getResults(keywords, page)
+    if (prepareResults == null) {
+      Future {
+        InternalServerError(views.html.internalError())
+      }
+    } else {
+      val results = Map("results" ->
+        prepareResults.getResults.map { result =>
+          toJson(Map(
+            "id" -> toJson(result.getId),
+            "header" -> toJson(result.getHeader),
+            "snippets" -> toJson(result.getSnippets),
+            "link" -> toJson(result.getLink)))
+        }.toList)
+      Future {
+        Ok(toJson(results))
       }
     }
   }
