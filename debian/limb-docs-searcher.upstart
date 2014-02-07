@@ -2,19 +2,21 @@ description     "Limb documents searcher"
 
 env DEFAULTS="/etc/default/limb-docs-searcher"
 env PORT=9000
-env PID="/var/run/limb-docs-searcher.pid"
+env PID_FILE="limb-docs-searcher.pid"
+env PID_DIR="/run/limb-docs-searcher"
 env CONFIG="/etc/limb-docs-searcher/application.conf"
 env LOGGER_FILE="/etc/limb-docs-searcher/logger.xml"
 env LANG=en_US.utf8
+
+pre-start script
+    mkdir -p $PID_DIR
+    chown $(cat /etc/limb-docs-searcher/application.conf | grep from_user | awk '{print $3}' | sed 's/"//g') $PID_DIR -R
+end script
 
 script
     if [ -f $DEFAULTS ]
     then
         . $DEFAULTS
     fi
-    exec /usr/bin/limb-docs-searcher -Dpidfile.path=$PID -Dhttp.port=$PORT -Dconfig.file=$CONFIG -Dlogger.file=$LOGGER_FILE
-end script
-
-post-stop script
-    rm $PID
+    exec /usr/bin/limb-docs-searcher -Dpidfile.path=$PID_DIR/$PID_FILE -Dhttp.port=$PORT -Dconfig.file=$CONFIG -Dlogger.file=$LOGGER_FILE
 end script
