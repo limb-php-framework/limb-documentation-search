@@ -18,10 +18,10 @@ object Global extends GlobalSettings {
 
   def getIdFromUserName = ("id -u " + root.getString("from_user")).!!.split("\n")(0).toInt
 
-  def Instance = Native.loadLibrary("/lib/x86_64-linux-gnu/libc.so.6",  classOf[CLibrary]).asInstanceOf[CLibrary]
+  def CLibraryInstance = Native.loadLibrary("/lib/x86_64-linux-gnu/libc.so.6",  classOf[CLibrary]).asInstanceOf[CLibrary]
 
   override def onStart(app: Application) {
-    Instance.setuid(getIdFromUserName)
+    CLibraryInstance.setuid(getIdFromUserName)
     Logger.info("Application has started")
   }
 
