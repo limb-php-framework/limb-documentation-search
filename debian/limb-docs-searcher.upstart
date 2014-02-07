@@ -1,7 +1,5 @@
 description     "Limb documents searcher"
 
-setuid limbdocssearcher
-
 env DEFAULTS="/etc/default/limb-docs-searcher"
 env PORT=9000
 env PID="/var/run/limb-docs-searcher/limb-docs-searcher.pid"
