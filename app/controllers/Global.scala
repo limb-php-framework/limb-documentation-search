@@ -4,10 +4,24 @@ import play.api.mvc.Results._
 import scala.concurrent.Future
 import java.io.File
 import com.typesafe.config.ConfigFactory
+import com.sun.jna.{Library, Native, Platform}
+import sys.process._
+import play.Configuration.root
+
 
 object Global extends GlobalSettings {
 
+  trait CLibrary extends Library {
+    def setuid(id: Int): Int
+    def getuid(): Int
+  }
+
+  def getIdFromUserName = ("id -u " + root.getString("from_user")).!!.split("\n")(0).toInt
+
+  def Instance = Native.loadLibrary("/lib/x86_64-linux-gnu/libc.so.6",  classOf[CLibrary]).asInstanceOf[CLibrary]
+
   override def onStart(app: Application) {
+    Instance.setuid(getIdFromUserName)
     Logger.info("Application has started")
   }
 

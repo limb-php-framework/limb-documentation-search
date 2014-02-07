@@ -13,6 +13,7 @@ libraryDependencies ++= Seq(
   "org.sphinx" % "sphinxapi" % "2.0.3",
   "org.apache.commons" % "commons-io" % "1.3.2",
   "org.apache.commons" % "commons-lang3" % "3.1",
+  "com.sun.jna" % "jna" % "3.0.9",
   "org.pegdown" % "pegdown" % "1.0.1"
 )
 
