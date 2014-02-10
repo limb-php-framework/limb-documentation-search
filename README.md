@@ -92,7 +92,9 @@ Limb docs searcher
 
    `searchd -c /etc/limb-docs-searcher/sphinx.conf`
 
-    После изменения конфига /etc/limb-docs-searcher/sphinx.conf необходимо перезапускать searchd.
+    Если searchd не запустился, проверьте чтобы в файле /etc/default/sphinxsearch был такой параметр: START=yes
+
+    После изменения конфига /etc/limb-docs-searcher/sphinx.conf необходимо запускать searchd заново, предварительно завершив его процесс.
 12. Настроить nginx для раздачи статики (конфиг nginx-static.conf.ex прилагается)
 
 **Управление сервером**
