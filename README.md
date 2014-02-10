@@ -200,6 +200,7 @@ Appender - блок, который позволяет настраивать к
 `$ indexer --all --rotate --config <путь к конфигу>/sphinx.conf`
 
 **Параметры конфигурации**
+* from_user - от какого пользователя приложение будет работать
 * secret_token_for_indexing - токен авторизации
 * sphinx_server - адрес сервера на котором крутится Sphinx
 * sphinx_port - порт, на котором Sphinx висит
@@ -214,3 +215,16 @@ Appender - блок, который позволяет настраивать к
 * static_url - адрес для статики
 * dbplugin=disabled нужно для отключения стандартного DBPlugin
 * evolutionplugin=disabled для отключения Evolution
+* future_timeout - время ожидание ответа от сфинкса
+
+настройки блока play > akka > actor > default-dispatcher > fork-join-executor
+* parallelism-min - минимальное количество тредов
+* parallelism-max - максимальное количество тредов
+
+настройки блока akka.actor.deployment которые можно трогать:
+* router - тип маршрутизации сообщений по акторам
+* nr-of-instances - колиество выделенных для работы со сфинксом акторов
+
+**Возможные ошибки и их устранение**
+
+* AskTimeoutException: Timed out - возникает если значение параметра future_timeout слишком мало по сравнению с необходимым временем для запроса к Сфинксу под текущей нагрузкой
