@@ -1,3 +1,10 @@
+limb-docs-searcher (1.1.0) precise; urgency=low
+
+  * HH-116 added routing actors, the program now runs faster. Also made in two basic action future
+
+ -- Andrey Rezcov <rsa199@ya.ru>  Thu, 06 Feb 2014 16:24:33 +0400
+
+
 limb-docs-searcher (1.0.3) precise; urgency=low
 
   * HH-102 Modification exception handling logic
