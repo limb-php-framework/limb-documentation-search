@@ -1,0 +1,54 @@
+#!/bin/sh
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+NAME=limb-docs-searcher
+
+DEFAULTS="/etc/default/limb-docs-searcher"
+PORT=9000
+PID_FILE="limb-docs-searcher.pid"
+PID_DIR="/run/limb-docs-searcher"
+CONFIG="/etc/limb-docs-searcher/application.conf"
+LOGGER_FILE="/etc/limb-docs-searcher/logger.xml"
+LANG=en_US.utf8
+
+if [ -f $DEFAULTS ]; then
+	. $DEFAULTS
+fi
+
+test -x $NAME || exit 0
+
+set -e
+
+. /lib/lsb/init-functions
+
+case "$1" in
+    start)
+		mkdir -p $PID_DIR
+   		chown $(cat /etc/limb-docs-searcher/application.conf | grep from_user | awk '{print $3}' | sed 's/"//g') $PID_DIR -R
+		echo -n "Starting $NAME: "
+		start-stop-daemon -b --start --quiet --pidfile $PID_DIR/$PID_FILE --exec /usr/bin/limb-docs-searcher -- -Dpidfile.path=$PID_DIR/$PID_FILE -Dhttp.port=$PORT -Dconfig.file=$CONFIG -Dlogger.file=$LOGGER_FILE || true
+		echo "Ok"
+		;;
+
+	stop)
+		echo -n "Stopping $DESC: "
+	        start-stop-daemon --stop --pidfile $PID_DIR/$PID_FILE
+		echo "$NAME."
+		;;
+
+	restart|force-reload)
+		echo -n "Restarting $NAME: "
+		start-stop-daemon -b --start --quiet --pidfile $PID_DIR/$PID_FILE --exec /usr/bin/limb-docs-searcher -- -Dpidfile.path=$PID_DIR/$PID_FILE -Dhttp.port=$PORT -Dconfig.file=$CONFIG -Dlogger.file=$LOGGER_FILE || true
+		echo "Ok"
+		;;
+
+	status)
+	        status_of_proc -p $PID_DIR/$PID_FILE "$NAME" "$NAME" && exit 0 || exit $?
+		;;
+	*)
+		echo "Usage: $NAME {start|stop|restart|status}" >&2
+		exit 1
+		;;
+esac
+
+exit 0
