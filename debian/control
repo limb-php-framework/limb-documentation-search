@@ -12,7 +12,7 @@ Section: java
 Priority: optional
 Architecture: all
 Depends: ${misc:Depends},
-  default-jdk  (>= 1.7)
+  openjdk-7-jdk  (>= 1.7)
 Description: Limb docs searcher
  Limb documents searcher
 

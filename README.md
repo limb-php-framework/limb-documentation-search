@@ -17,7 +17,7 @@ Limb docs searcher
 
 **Рабочее окружение**
 
-Разработка ведется под ОС Ubuntu 12.04, для корректной работы окружения необходимо поднять следующие сервисы:
+Разработка ведется под ОС Debian 7, для корректной работы окружения необходимо поднять следующие сервисы:
 
     * `postgresql 9.1` (рабочая база данных)
     * `sphinxsearch 2.0` (поисковый движок)
@@ -45,7 +45,7 @@ Limb docs searcher
 
 **Настройка production окружения**
 
-Приложение заточено под Ubuntu 12.04.
+Приложение заточено под Debian 7.
 
 1. В репозитории текущий работающий релиз лежит в ветке `master`
 2. Перед сборкой пакета нужно установить все сборочные зависимости приложения:
@@ -70,11 +70,11 @@ Limb docs searcher
 8. Настроить подключение к базе данных (параметры db.default.*)
 9. Запускаем приложение
 
-   `sudo start limb-docs-searcher`
+   `sudo service limb-docs-searcher start` 
 
     Если
 
-    `status limb-docs-searcher` после запуска отрицательный, ищем причину в логах upstart: /var/log/upstart/limb-docs-searcher.log
+    `service limb-docs-searcher status` после запуска отрицательный, смотрим на выхлоп после `service limb-docs-searcher start`
 
 10. Запускаем индексацию запросом
 
@@ -101,14 +101,14 @@ Limb docs searcher
 
 * Запуск
 
-    `start limb-docs-searcher`
+   `service limb-docs-searcher start`
 
 * Остановка
 
-  `stop limb-docs-searcher`
+  `service limb-docs-searcher start`
 * Перезапуск
 
-  `restart limb-docs-searcher`
+  `service limb-docs-searcher start`
 
 **Настройка nginx**
 
