@@ -95,9 +95,12 @@ object Searcher extends Controller {
 
   private def getResults(keywords: String, page: Int): Results = {
 
-    val queryResults = (Await.result(sphinx ? keywords, Duration.Inf)).asInstanceOf[org.sphx.api.SphinxResult]
+    val request = new ActorRequest()
 
-    sphinx ! page
+    request.page = page
+    request.keywords = keywords
+
+    val queryResults = (Await.result(sphinx ? request, Duration.Inf)).asInstanceOf[org.sphx.api.SphinxResult]
 
     if (queryResults == null) {
       Logger("application").error("Failed to connect to Sphinx or error retrieving results from the Sphinx")
@@ -105,6 +108,7 @@ object Searcher extends Controller {
     }
 
     val docIds = queryResults.matches.map { _.docId }
+
     var results = new Results
     results.setKeywords(keywords)
     results.setFound(queryResults.totalFound)

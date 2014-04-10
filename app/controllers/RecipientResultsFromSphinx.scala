@@ -20,6 +20,14 @@ class PageElement {
 
 }
 
+class ActorRequest {
+
+  var page: Int = 0
+
+  var keywords: String = ""
+
+}
+
 
 class RecipientResultsFromSphinx extends Actor with ActorLogging {
 
@@ -45,9 +53,9 @@ class RecipientResultsFromSphinx extends Actor with ActorLogging {
   def receive = {
     case pageElement: PageElement => sender ! sphinx.BuildExcerpts(pageElement.docs, root.getString("index_name"), pageElement.keywords, HashMap[String, Int]("around" -> root.getInt("count_snippets"))).toList
     case "sphinxStatus" => sender ! getSphinxStatus
-    case keywords: String => sender ! sphinx.Query(keywords, root.getString("index_name"))
-    case page: Int => sphinx.SetLimits(root.getInt("page_results") * page - root.getInt("page_results"),
-      root.getInt("page_results"))
- }
+    case request: ActorRequest =>
+      sphinx.SetLimits(root.getInt("page_results") * (request.page - 1), root.getInt("page_results"))
+      sender ! sphinx.Query(request.keywords, root.getString("index_name"))
+  }
 
 }
