@@ -15,8 +15,6 @@ if [ -f $DEFAULTS ]; then
 	. $DEFAULTS
 fi
 
-test -x $NAME || exit 0
-
 set -e
 
 . /lib/lsb/init-functions
