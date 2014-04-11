@@ -139,12 +139,15 @@ object Searcher extends Controller {
         if (docIds.length > 0) {
           results.setResults(SQL("SELECT id, url, header1, content FROM files WHERE id in ( " + docIds.mkString(", ") + " );").as(ViewResult.parser *).toArray)
         }
-
+        results.setResults(docIds.map { docId =>
+	  results.getResults.filter{ _.getId == docId }(0)
+	})
       }
     } catch {
       case e: SQLException => Logger("application").error("Failed to retrieve data from the database")
         return null
     }
+
     results
   }
 
