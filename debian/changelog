@@ -1,3 +1,11 @@
+limb-docs-searcher (1.2.0) precise; urgency=low
+
+  * HH-HH-138 fxd incorrect relevance, fxd uncoordinated requests to actors
+
+ -- Andrey Rezcov <rsa199@ya.ru>  Mon, 14 Apr 2014 09:37:12 +0400
+
+
+
 limb-docs-searcher (1.1.0) precise; urgency=low
 
   * HH-116 added routing actors, the program now runs faster. Also made in two basic action future
