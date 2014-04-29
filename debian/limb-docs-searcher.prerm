@@ -1,6 +1,6 @@
 #!/bin/bash
 
-stop limb-docs-searcher 2> /dev/null
+/etc/init.d/limb-docs-searcher stop 2> /dev/null
 deluser limbdocssearcher > /dev/null
 
 exit 0
